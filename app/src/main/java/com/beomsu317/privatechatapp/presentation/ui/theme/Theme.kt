@@ -1,10 +1,12 @@
-package com.beomsu317.privatechatapp.ui.theme
+package com.beomsu317.privatechatapp.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import com.google.accompanist.systemuicontroller.SystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -37,6 +39,9 @@ fun PrivateChatAppTheme(
     } else {
         LightColorPalette
     }
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.isStatusBarVisible = false
 
     MaterialTheme(
         colors = colors,

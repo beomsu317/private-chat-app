@@ -1,4 +1,4 @@
-package com.beomsu317.privatechatapp.ui.theme
+package com.beomsu317.privatechatapp.presentation.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
