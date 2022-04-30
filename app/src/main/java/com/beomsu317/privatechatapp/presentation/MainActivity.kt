@@ -21,6 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.beomsu317.privatechatapp.presentation.ui.theme.PrivateChatAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
             PrivateChatAppTheme {
                 val navController = rememberNavController()
                 val scaffoldState = rememberScaffoldState()
+                val scope = rememberCoroutineScope()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     scaffoldState = scaffoldState,
@@ -37,7 +39,14 @@ class MainActivity : ComponentActivity() {
                         BottomNavigationBar(navController)
                     }
                 ) { innerPadding ->
-                    SetupNavGraph(navController, innerPadding, scaffoldState)
+                    SetupNavGraph(
+                        navHostController = navController,
+                        innerPadding = innerPadding,
+                        showSnackbar = { message, duration ->
+                            scope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(message = message, duration = duration)
+                            }
+                        })
                 }
             }
         }

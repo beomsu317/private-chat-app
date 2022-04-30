@@ -3,7 +3,7 @@ package com.beomsu317.privatechatapp.presentation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -24,7 +24,7 @@ const val PROFILE_GRAPH_ROUTE = "profile"
 fun SetupNavGraph(
     navHostController: NavHostController,
     innerPadding: PaddingValues,
-    scaffoldState: ScaffoldState
+    showSnackbar: (String, SnackbarDuration) -> Unit
 ) {
     NavHost(
         navController = navHostController,
@@ -32,7 +32,7 @@ fun SetupNavGraph(
         route = ROOT_GRAPH_ROUTE,
         modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
     ) {
-        startupNavGraph(navHostController, scaffoldState)
+        startupNavGraph(navHostController, showSnackbar)
         friendsNavGraph(navHostController)
         chatNavGraph(navHostController)
         profileNavGraph(navHostController)

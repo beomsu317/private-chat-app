@@ -29,13 +29,13 @@ import com.beomsu317.privatechatapp.R
 import com.beomsu317.privatechatapp.presentation.common.Emojis
 import com.beomsu317.privatechatapp.presentation.common.OneTimeEvent
 import com.beomsu317.privatechatapp.presentation.startup.sign_up.SignUpEvent
-import com.beomsu317.privatechatapp.presentation.startup.sign_up.SignUpState
 import com.beomsu317.privatechatapp.presentation.startup.sign_up.SignUpViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignUpScreen(
-    scaffoldState: ScaffoldState,
+    showSnackbar: (String, SnackbarDuration) -> Unit,
+    onSignedUp: () -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -45,13 +45,15 @@ fun SignUpScreen(
         oneTimeEventFlow.collectLatest { oneTimeEvent ->
             when (oneTimeEvent) {
                 is OneTimeEvent.ShowSnackbar -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        oneTimeEvent.message,
-                        null,
-                        SnackbarDuration.Short
-                    )
+                    showSnackbar(oneTimeEvent.message, SnackbarDuration.Short)
                 }
             }
+        }
+    }
+
+    LaunchedEffect(key1 = state.isSignedUp) {
+        if (state.isSignedUp) {
+            onSignedUp()
         }
     }
 
@@ -114,10 +116,10 @@ fun SignUpSection(
     onSignUp: (String, String, String, String) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    var displayName by remember { mutableStateOf("zzzz") }
-    var email by remember { mutableStateOf("zz@ba.com") }
-    var password by remember { mutableStateOf("asdasdasd") }
-    var confirmPassword by remember { mutableStateOf("asdasdasd") }
+    var displayName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(

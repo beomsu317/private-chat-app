@@ -53,7 +53,7 @@ class SignUpViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (displayName.isNullOrEmpty()) {
-                _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Username is not empty"))
+                _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Username is empty"))
                 return@launch
             }
             if (!validateEmailUseCase(email)) {

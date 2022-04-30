@@ -1,6 +1,6 @@
 package com.beomsu317.privatechatapp.presentation.startup
 
-import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -20,10 +20,10 @@ sealed class StartupScreen(val route: String) {
 
 fun NavGraphBuilder.startupNavGraph(
     navHostController: NavHostController,
-    scaffoldState: ScaffoldState
+    showSnackbar: (String, SnackbarDuration) -> Unit
 ) {
     navigation(
-        startDestination = StartupScreen.SignUpScreen.route,
+        startDestination = StartupScreen.SplashScreen.route,
         route = STARTUP_GRAPH_ROUTE,
     ) {
         composable(StartupScreen.SplashScreen.route) {
@@ -52,7 +52,12 @@ fun NavGraphBuilder.startupNavGraph(
             )
         }
         composable(StartupScreen.SignUpScreen.route) {
-            SignUpScreen(scaffoldState = scaffoldState)
+            SignUpScreen(
+                showSnackbar = showSnackbar,
+                onSignedUp = {
+                    navHostController.popBackStack()
+                }
+            )
         }
     }
 }
