@@ -1,5 +1,6 @@
 package com.beomsu317.privatechatapp.presentation.startup
 
+import androidx.compose.material.ScaffoldState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -11,34 +12,47 @@ import com.beomsu317.privatechatapp.presentation.startup.splash.SplashScreen
 import com.beomsu317.privatechatapp.presentation.ui.SignUpScreen
 
 sealed class StartupScreen(val route: String) {
-    object SplashScreen: StartupScreen(route = "splash_screen")
-    object IntroScreen: StartupScreen(route = "intro_screen")
-    object SignInScreen: StartupScreen(route = "sign_in_screen")
-    object SignUpScreen: StartupScreen(route = "sign_up_screen")
+    object SplashScreen : StartupScreen(route = "splash_screen")
+    object IntroScreen : StartupScreen(route = "intro_screen")
+    object SignInScreen : StartupScreen(route = "sign_in_screen")
+    object SignUpScreen : StartupScreen(route = "sign_up_screen")
 }
 
 fun NavGraphBuilder.startupNavGraph(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    scaffoldState: ScaffoldState
 ) {
     navigation(
-        startDestination = StartupScreen.SplashScreen.route,
+        startDestination = StartupScreen.SignUpScreen.route,
         route = STARTUP_GRAPH_ROUTE,
     ) {
         composable(StartupScreen.SplashScreen.route) {
             SplashScreen(
                 onNavigate = {
-                    navHostController.navigate(StartupScreen.IntroScreen.route)
+                    navHostController.popBackStack()
+                    navHostController.navigate(
+                        StartupScreen.IntroScreen.route
+                    )
                 }
             )
         }
         composable(StartupScreen.IntroScreen.route) {
-            IntroScreen()
+            IntroScreen(onStartButtonClick = {
+                navHostController.navigate(StartupScreen.SignInScreen.route)
+            })
         }
         composable(StartupScreen.SignInScreen.route) {
-            SignInScreen(navHostController)
+            SignInScreen(
+                onSignInButtonClick = {
+//                    navHostController.navigate()
+                },
+                onSignUpButtonClick = {
+                    navHostController.navigate(StartupScreen.SignUpScreen.route)
+                }
+            )
         }
         composable(StartupScreen.SignUpScreen.route) {
-            SignUpScreen()
+            SignUpScreen(scaffoldState = scaffoldState)
         }
     }
 }

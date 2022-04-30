@@ -3,6 +3,7 @@ package com.beomsu317.privatechatapp.presentation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -20,14 +21,18 @@ const val CHAT_GRAPH_ROUTE = "chat"
 const val PROFILE_GRAPH_ROUTE = "profile"
 
 @Composable
-fun SetupNavGraph(navHostController: NavHostController, innerPadding: PaddingValues) {
+fun SetupNavGraph(
+    navHostController: NavHostController,
+    innerPadding: PaddingValues,
+    scaffoldState: ScaffoldState
+) {
     NavHost(
         navController = navHostController,
         startDestination = STARTUP_GRAPH_ROUTE,
         route = ROOT_GRAPH_ROUTE,
         modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
     ) {
-        startupNavGraph(navHostController)
+        startupNavGraph(navHostController, scaffoldState)
         friendsNavGraph(navHostController)
         chatNavGraph(navHostController)
         profileNavGraph(navHostController)

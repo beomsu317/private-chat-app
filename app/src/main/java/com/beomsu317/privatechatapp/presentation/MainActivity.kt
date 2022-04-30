@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                         BottomNavigationBar(navController)
                     }
                 ) { innerPadding ->
-                    SetupNavGraph(navController, innerPadding)
+                    SetupNavGraph(navController, innerPadding, scaffoldState)
                 }
             }
         }
@@ -51,8 +51,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         mutableStateOf(false)
     }
     when (navBackStackEntry?.destination?.parent?.route) {
-        STARTUP_GRAPH_ROUTE -> bottomBarState = false
-        else -> bottomBarState = true
+        FRIENDS_GRAPH_ROUTE, CHAT_GRAPH_ROUTE, PROFILE_GRAPH_ROUTE -> bottomBarState = true
+        else -> bottomBarState = false
     }
 
     AnimatedVisibility(
