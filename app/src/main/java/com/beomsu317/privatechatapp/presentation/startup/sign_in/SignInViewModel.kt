@@ -1,11 +1,13 @@
 package com.beomsu317.privatechatapp.presentation.startup.sign_in
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.privatechatapp.common.Resource
+import com.beomsu317.privatechatapp.domain.model.User
 import com.beomsu317.privatechatapp.domain.use_case.PrivateChatUseCases
 import com.beomsu317.privatechatapp.domain.use_case.ValidateEmailUseCase
 import com.beomsu317.privatechatapp.domain.use_case.ValidatePasswordUseCase
@@ -22,7 +24,7 @@ import javax.inject.Inject
 class SignInViewModel @Inject constructor(
     private val privateChatUseCases: PrivateChatUseCases,
     private val validateEmailUseCase: ValidateEmailUseCase,
-    private val validatePasswordUseCase: ValidatePasswordUseCase
+    private val validatePasswordUseCase: ValidatePasswordUseCase,
 ) : ViewModel() {
 
     var state by mutableStateOf(SignInState())
@@ -60,7 +62,11 @@ class SignInViewModel @Inject constructor(
                             state = state.copy(isLoading = false)
                         }
                         is Resource.Error -> {
-                            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(resource.message ?: "An unknown error occured"))
+                            _oneTimeEvent.send(
+                                OneTimeEvent.ShowSnackbar(
+                                    resource.message ?: "An unknown error occured"
+                                )
+                            )
                             state = state.copy(isLoading = false)
                         }
                         is Resource.Loading -> {

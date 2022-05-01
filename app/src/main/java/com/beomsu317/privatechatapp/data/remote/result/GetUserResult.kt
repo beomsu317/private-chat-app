@@ -4,7 +4,6 @@ import com.beomsu317.privatechatapp.data.remote.dto.UserDto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserLoginResult(
-    val token: String,
+data class GetUserResult(
     val user: UserDto
 )
