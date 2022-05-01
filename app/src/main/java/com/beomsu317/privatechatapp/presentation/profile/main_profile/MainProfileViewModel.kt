@@ -16,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainProfileViewModel @Inject constructor(
     private val privateChatUseCases: PrivateChatUseCases,
-    private val client: Client
 ): ViewModel() {
 
     init {

@@ -6,7 +6,9 @@ interface PrivateChatRepository {
 
     suspend fun registerUser(displayName: String, email: String, password: String, confirmPassword: String)
 
-    suspend fun loginUser(email: String, password: String): Pair<String, User>
+    suspend fun loginUser(email: String, password: String)
 
     suspend fun getProfile(): User
+
+    suspend fun isSigned(): Boolean
 }

@@ -32,9 +32,18 @@ fun NavGraphBuilder.startupNavGraph(
     ) {
         composable(StartupScreen.SplashScreen.route) {
             SplashScreen(
-                onNavigate = {
+                onNavigateSignIn = {
                     navController.popBackStack()
                     navController.navigate(StartupScreen.IntroScreen.route)
+                },
+                onNavigateFriendsList = {
+                    navController.popBackStack()
+                    navController.navigate(BottomNavRoute.FriendsRoute.route) {
+                        popUpTo(STARTUP_GRAPH_ROUTE) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

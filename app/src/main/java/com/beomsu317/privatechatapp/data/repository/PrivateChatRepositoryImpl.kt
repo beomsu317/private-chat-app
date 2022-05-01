@@ -1,15 +1,19 @@
 package com.beomsu317.privatechatapp.data.repository
 
+import com.beomsu317.privatechatapp.data.local.data_store.ClientDataStore
 import com.beomsu317.privatechatapp.data.remote.PrivateChatApi
 import com.beomsu317.privatechatapp.data.remote.request.UserLoginRequest
 import com.beomsu317.privatechatapp.data.remote.request.UserRegisterRequest
+import com.beomsu317.privatechatapp.domain.model.Client
 import com.beomsu317.privatechatapp.domain.model.User
 import com.beomsu317.privatechatapp.domain.repository.PrivateChatRepository
+import kotlinx.coroutines.flow.firstOrNull
 import java.lang.Exception
 import javax.inject.Inject
 
 class PrivateChatRepositoryImpl @Inject constructor(
-    private val api: PrivateChatApi
+    private val api: PrivateChatApi,
+    private val clientDataStore: ClientDataStore
 ) : PrivateChatRepository {
     override suspend fun registerUser(
         displayName: String,
@@ -30,7 +34,7 @@ class PrivateChatRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loginUser(email: String, password: String): Pair<String, User> {
+    override suspend fun loginUser(email: String, password: String) {
         val response = api.loginUser(
             UserLoginRequest(
                 email = email,
@@ -44,14 +48,17 @@ class PrivateChatRepositoryImpl @Inject constructor(
             val result = body.result ?: throw Exception("result is null")
             val token = result.token
             val userDto = result.user
-            return Pair(
-                token, User(
-                    id = userDto.id,
-                    email = userDto.email,
-                    displayName = userDto.displayName,
-                    photoUrl = userDto.photoUrl,
-                    friends = userDto.friends,
-                    rooms = userDto.rooms
+            clientDataStore.updateClient(
+                Client(
+                    token = token,
+                    user = User(
+                        id = userDto.id,
+                        email = userDto.email,
+                        displayName = userDto.displayName,
+                        photoUrl = userDto.photoUrl,
+                        friends = userDto.friends,
+                        rooms = userDto.rooms
+                    )
                 )
             )
         }
@@ -75,4 +82,11 @@ class PrivateChatRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun isSigned(): Boolean {
+        val client = clientDataStore.dataStoreFlow.firstOrNull()
+        if (client?.token != null) {
+            return true
+        }
+        return false
+    }
 }

@@ -14,12 +14,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.beomsu317.privatechatapp.R
-//import com.beomsu317.privatechatapp.presentation.components.Button
 
 @Composable
 fun IntroScreen(
-    onStartButtonClick: () -> Unit
+    onStartButtonClick: () -> Unit,
+    viewModel: IntroViewModel = hiltViewModel()
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),

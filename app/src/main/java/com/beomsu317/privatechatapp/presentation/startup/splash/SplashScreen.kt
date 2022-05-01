@@ -1,5 +1,6 @@
 package com.beomsu317.privatechatapp.presentation.startup.splash
 
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
@@ -14,13 +15,33 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.beomsu317.privatechatapp.R
+import com.beomsu317.privatechatapp.presentation.common.OneTimeEvent
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SplashScreen(
-    onNavigate: () -> Unit
+    onNavigateSignIn: () -> Unit,
+    onNavigateFriendsList: () -> Unit,
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
+    val oneTimeEventFlow = viewModel.oneTimeEventFlow
+
+    LaunchedEffect(key1 = oneTimeEventFlow) {
+        oneTimeEventFlow.collectLatest { oneTimeEvent ->
+            when (oneTimeEvent) {
+                is OneTimeEvent.SignedIn -> {
+                    onNavigateFriendsList()
+                }
+                is OneTimeEvent.NeedSignIn -> {
+                    onNavigateSignIn()
+                }
+            }
+        }
+    }
+
     var scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
@@ -34,8 +55,6 @@ fun SplashScreen(
                 }
             )
         )
-        delay(1000L)
-        onNavigate()
     }
     Box(
        modifier = Modifier
