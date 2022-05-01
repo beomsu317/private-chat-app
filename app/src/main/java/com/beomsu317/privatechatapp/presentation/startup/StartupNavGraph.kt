@@ -1,11 +1,15 @@
 package com.beomsu317.privatechatapp.presentation.startup
 
+import android.util.Log
 import androidx.compose.material.SnackbarDuration
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
+import androidx.navigation.*
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
+import com.beomsu317.privatechatapp.presentation.BottomNavRoute
+import com.beomsu317.privatechatapp.presentation.ROOT_GRAPH_ROUTE
 import com.beomsu317.privatechatapp.presentation.STARTUP_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.presentation.bottomNavBarRoutes
+import com.beomsu317.privatechatapp.presentation.friends.FriendsScreen
 import com.beomsu317.privatechatapp.presentation.startup.intro.IntroScreen
 import com.beomsu317.privatechatapp.presentation.startup.sign_in.SignInScreen
 import com.beomsu317.privatechatapp.presentation.startup.splash.SplashScreen
@@ -19,7 +23,7 @@ sealed class StartupScreen(val route: String) {
 }
 
 fun NavGraphBuilder.startupNavGraph(
-    navHostController: NavHostController,
+    navController: NavHostController,
     showSnackbar: (String, SnackbarDuration) -> Unit
 ) {
     navigation(
@@ -29,33 +33,37 @@ fun NavGraphBuilder.startupNavGraph(
         composable(StartupScreen.SplashScreen.route) {
             SplashScreen(
                 onNavigate = {
-                    navHostController.popBackStack()
-                    navHostController.navigate(
-                        StartupScreen.IntroScreen.route
-                    )
+                    navController.popBackStack()
+                    navController.navigate(StartupScreen.IntroScreen.route)
                 }
             )
         }
         composable(StartupScreen.IntroScreen.route) {
             IntroScreen(onStartButtonClick = {
-                navHostController.navigate(StartupScreen.SignInScreen.route)
+                navController.navigate(StartupScreen.SignInScreen.route)
             })
         }
         composable(StartupScreen.SignInScreen.route) {
             SignInScreen(
-                onSignInButtonClick = {
-//                    navHostController.navigate()
+                onSignedIn = {
+                    navController.navigate(BottomNavRoute.FriendsRoute.route) {
+                        popUpTo(STARTUP_GRAPH_ROUTE) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 },
                 onSignUpButtonClick = {
-                    navHostController.navigate(StartupScreen.SignUpScreen.route)
-                }
+                    navController.navigate(StartupScreen.SignUpScreen.route)
+                },
+                showSnackbar = showSnackbar
             )
         }
         composable(StartupScreen.SignUpScreen.route) {
             SignUpScreen(
                 showSnackbar = showSnackbar,
                 onSignedUp = {
-                    navHostController.popBackStack()
+                    navController.popBackStack()
                 }
             )
         }

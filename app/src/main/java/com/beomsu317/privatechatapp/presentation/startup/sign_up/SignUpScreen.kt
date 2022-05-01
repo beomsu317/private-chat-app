@@ -30,7 +30,6 @@ import com.beomsu317.privatechatapp.presentation.common.Emojis
 import com.beomsu317.privatechatapp.presentation.common.OneTimeEvent
 import com.beomsu317.privatechatapp.presentation.startup.sign_up.SignUpEvent
 import com.beomsu317.privatechatapp.presentation.startup.sign_up.SignUpViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignUpScreen(
@@ -42,18 +41,15 @@ fun SignUpScreen(
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
 
     LaunchedEffect(key1 = oneTimeEventFlow) {
-        oneTimeEventFlow.collectLatest { oneTimeEvent ->
+        oneTimeEventFlow.collect { oneTimeEvent ->
             when (oneTimeEvent) {
                 is OneTimeEvent.ShowSnackbar -> {
                     showSnackbar(oneTimeEvent.message, SnackbarDuration.Short)
                 }
+                is OneTimeEvent.SignedUp -> {
+                    onSignedUp()
+                }
             }
-        }
-    }
-
-    LaunchedEffect(key1 = state.isSignedUp) {
-        if (state.isSignedUp) {
-            onSignedUp()
         }
     }
 
@@ -276,4 +272,8 @@ fun SignUpSection(
             )
         }
     }
+}
+
+fun OneTimeEvent.asd() {
+
 }

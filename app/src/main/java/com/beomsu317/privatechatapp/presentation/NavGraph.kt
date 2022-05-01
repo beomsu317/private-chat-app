@@ -33,9 +33,9 @@ fun SetupNavGraph(
         modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
     ) {
         startupNavGraph(navHostController, showSnackbar)
-        friendsNavGraph(navHostController)
-        chatNavGraph(navHostController)
-        profileNavGraph(navHostController)
+        friendsNavGraph(navHostController, showSnackbar)
+        chatNavGraph(navHostController, showSnackbar)
+        profileNavGraph(navHostController, showSnackbar)
     }
 }
 

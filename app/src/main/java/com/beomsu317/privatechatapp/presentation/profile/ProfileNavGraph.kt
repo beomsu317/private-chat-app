@@ -1,5 +1,6 @@
 package com.beomsu317.privatechatapp.presentation.profile
 
+import androidx.compose.material.SnackbarDuration
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -11,7 +12,8 @@ sealed class ProfileScreen(val route: String) {
 }
 
 fun NavGraphBuilder.profileNavGraph(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    showSnackbar: (String, SnackbarDuration) -> Unit
 ) {
     navigation(
         startDestination = ProfileScreen.MainProfileScreen.route,

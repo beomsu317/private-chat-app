@@ -4,8 +4,8 @@ import javax.inject.Inject
 
 class ValidateEmailUseCase @Inject constructor() {
 
-    operator fun invoke(email: String): Boolean {
-        if (email.isNullOrEmpty()) {
+    suspend operator fun invoke(email: String): Boolean {
+        if (email.isNullOrBlank()) {
             return false
         }
         if (!Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$").containsMatchIn(email)) {

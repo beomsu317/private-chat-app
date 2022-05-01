@@ -3,6 +3,7 @@
 package com.beomsu317.privatechatapp.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -19,6 +20,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.get
+import com.beomsu317.privatechatapp.presentation.friends.FriendsScreen
 import com.beomsu317.privatechatapp.presentation.ui.theme.PrivateChatAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -83,7 +86,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                                     screen.unselectedResId
                                 }
                             ),
-                            contentDescription = screen.label
+                            contentDescription = screen.label,
                         )
                     },
                     selected = isSelected == true,
@@ -97,7 +100,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     unselectedContentColor = Color.White,
                     onClick = {
                         navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
+                            popUpTo(FriendsScreen.FriendsListScreen.route) {
                                 saveState = true
                             }
                             launchSingleTop = true

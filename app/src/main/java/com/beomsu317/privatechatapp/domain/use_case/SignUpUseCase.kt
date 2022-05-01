@@ -9,7 +9,7 @@ import javax.inject.Inject
 class SignUpUseCase @Inject constructor(
     private val repository: PrivateChatRepository
 ) {
-    operator fun invoke(
+    suspend operator fun invoke(
         displayName: String,
         email: String,
         password: String,

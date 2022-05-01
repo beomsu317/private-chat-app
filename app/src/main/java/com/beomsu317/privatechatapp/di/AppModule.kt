@@ -4,6 +4,7 @@ import com.beomsu317.privatechatapp.data.remote.PrivateChatApi
 import com.beomsu317.privatechatapp.data.repository.PrivateChatRepositoryImpl
 import com.beomsu317.privatechatapp.domain.repository.PrivateChatRepository
 import com.beomsu317.privatechatapp.domain.use_case.PrivateChatUseCases
+import com.beomsu317.privatechatapp.domain.use_case.SignInUseCase
 import com.beomsu317.privatechatapp.domain.use_case.SignUpUseCase
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -38,7 +39,8 @@ object AppModule {
     @Singleton
     fun providePrivateChatUseCase(repository: PrivateChatRepository): PrivateChatUseCases {
         return PrivateChatUseCases(
-            signUpUseCase = SignUpUseCase(repository)
+            signUpUseCase = SignUpUseCase(repository),
+            signInUseCase = SignInUseCase(repository)
         )
     }
 }

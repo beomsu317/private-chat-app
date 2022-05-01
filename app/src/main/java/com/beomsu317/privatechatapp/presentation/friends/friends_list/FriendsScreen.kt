@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.beomsu317.privatechatapp.presentation.startup.StartupScreen
 
 @Composable
 fun FriendsListScreen(
@@ -18,7 +19,9 @@ fun FriendsListScreen(
         Text(
             text = "Friends List Screen",
             modifier = Modifier.clickable {
-                navHostController.navigate(FriendsScreen.FriendProfileScreen.route)
+                navHostController.popBackStack()
+                navHostController.navigate(StartupScreen.SplashScreen.route)
+//                navHostController.navigate(FriendsScreen.FriendProfileScreen.route)
             }
         )
     }

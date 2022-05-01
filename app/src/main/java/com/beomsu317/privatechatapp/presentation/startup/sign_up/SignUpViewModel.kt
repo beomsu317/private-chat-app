@@ -1,6 +1,5 @@
 package com.beomsu317.privatechatapp.presentation.startup.sign_up
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val privateChatUseCase: PrivateChatUseCases,
+    private val privateChatUseCases: PrivateChatUseCases,
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase
 ) : ViewModel() {
@@ -52,7 +51,7 @@ class SignUpViewModel @Inject constructor(
         confirmPassword: String
     ) {
         viewModelScope.launch {
-            if (displayName.isNullOrEmpty()) {
+            if (displayName.isNullOrBlank()) {
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Username is empty"))
                 return@launch
             }
@@ -68,7 +67,7 @@ class SignUpViewModel @Inject constructor(
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Password and confirm password are not match"))
                 return@launch
             }
-            privateChatUseCase.signUpUseCase(
+            privateChatUseCases.signUpUseCase(
                 displayName = displayName,
                 email = email,
                 password = password,
@@ -77,7 +76,8 @@ class SignUpViewModel @Inject constructor(
                 when (resource) {
                     is Resource.Success -> {
                         _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Successfully registered"))
-                        state = state.copy(isLoading = false, isSignedUp = true)
+                        _oneTimeEvent.send(OneTimeEvent.SignedUp)
+                        state = state.copy(isLoading = false)
                     }
                     is Resource.Error -> {
                         _oneTimeEvent.send(
