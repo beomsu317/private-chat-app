@@ -4,5 +4,6 @@ data class PrivateChatUseCases(
     val signUpUseCase: SignUpUseCase,
     val signInUseCase: SignInUseCase,
     val getProfileUseCase: GetProfileUseCase,
-    val isSignedInUseCase: IsSignedInUseCase
+    val isSignedInUseCase: IsSignedInUseCase,
+    val signOutUseCase: SignOutUseCase
 )

@@ -89,4 +89,10 @@ class PrivateChatRepositoryImpl @Inject constructor(
         }
         return false
     }
+
+    override suspend fun signOut() {
+        clientDataStore.updateClient(
+            Client()
+        )
+    }
 }

@@ -1,15 +1,10 @@
 package com.beomsu317.privatechatapp.presentation.startup
 
-import android.util.Log
 import androidx.compose.material.SnackbarDuration
 import androidx.navigation.*
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.composable
 import com.beomsu317.privatechatapp.presentation.BottomNavRoute
-import com.beomsu317.privatechatapp.presentation.ROOT_GRAPH_ROUTE
 import com.beomsu317.privatechatapp.presentation.STARTUP_GRAPH_ROUTE
-import com.beomsu317.privatechatapp.presentation.bottomNavBarRoutes
-import com.beomsu317.privatechatapp.presentation.friends.FriendsScreen
 import com.beomsu317.privatechatapp.presentation.startup.intro.IntroScreen
 import com.beomsu317.privatechatapp.presentation.startup.sign_in.SignInScreen
 import com.beomsu317.privatechatapp.presentation.startup.splash.SplashScreen
@@ -38,7 +33,7 @@ fun NavGraphBuilder.startupNavGraph(
                 },
                 onNavigateFriendsList = {
                     navController.popBackStack()
-                    navController.navigate(BottomNavRoute.FriendsRoute.route) {
+                    navController.navigate(BottomNavRoute.ProfileRoute.route) {
                         popUpTo(STARTUP_GRAPH_ROUTE) {
                             inclusive = true
                         }

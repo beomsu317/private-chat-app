@@ -15,7 +15,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
@@ -48,7 +48,7 @@ object DataModule {
         return Retrofit.Builder()
             .baseUrl(PrivateChatApi.BASE_URL)
             .addConverterFactory(
-                Json.asConverterFactory(MediaType.get("application/json"))
+                Json.asConverterFactory("application/json".toMediaType())
             )
             .client(client)
             .build()
@@ -66,14 +66,14 @@ object DataModule {
     @Provides
     @Singleton
     fun providePrivateChatUseCase(
-        repository: PrivateChatRepository,
-        client: Client
+        repository: PrivateChatRepository
     ): PrivateChatUseCases {
         return PrivateChatUseCases(
             signUpUseCase = SignUpUseCase(repository),
             signInUseCase = SignInUseCase(repository),
             getProfileUseCase = GetProfileUseCase(repository),
-            isSignedInUseCase = IsSignedInUseCase(repository)
+            isSignedInUseCase = IsSignedInUseCase(repository),
+            signOutUseCase = SignOutUseCase(repository)
         )
     }
 
