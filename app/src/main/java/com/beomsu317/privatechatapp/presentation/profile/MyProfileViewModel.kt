@@ -1,11 +1,14 @@
 package com.beomsu317.privatechatapp.presentation.profile
 
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.privatechatapp.common.Resource
+import com.beomsu317.privatechatapp.domain.model.Client
 import com.beomsu317.privatechatapp.domain.model.User
 import com.beomsu317.privatechatapp.domain.use_case.PrivateChatUseCases
 import com.beomsu317.privatechatapp.presentation.common.OneTimeEvent
@@ -20,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyProfileViewModel @Inject constructor(
     private val privateChatUseCases: PrivateChatUseCases,
+    private val client: Client
 ): ViewModel() {
 
     var state by mutableStateOf(MyProfileState())
@@ -37,6 +41,9 @@ class MyProfileViewModel @Inject constructor(
             is MyProfileEvent.SignOut -> {
                 signOut()
             }
+            is MyProfileEvent.UploadProfileImage -> {
+                uploadProfileImage(event.uri)
+            }
         }
     }
 
@@ -45,7 +52,7 @@ class MyProfileViewModel @Inject constructor(
             privateChatUseCases.getProfileUseCase().onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        state = state.copy(isLoading = false, user = resource.data ?: User())
+                        state = state.copy(isLoading = false, user = client.user)
                     }
                     is Resource.Error -> {
                         _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(resource.message ?: "An unexpected error occured"))
@@ -63,5 +70,22 @@ class MyProfileViewModel @Inject constructor(
         viewModelScope.launch {
             privateChatUseCases.signOutUseCase()
         }
+    }
+
+    private fun uploadProfileImage(uri: Uri?) {
+        uri?.let {
+            viewModelScope.launch {
+                privateChatUseCases.uploadProfileImageUseCase(uri = uri).onEach { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Successfully update"))
+                        }
+                        is Resource.Error -> {
+                            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(resource.message ?: "An unknown error occured"))
+                        }
+                    }
+                }.launchIn(viewModelScope)
+            }
+        } ?: return
     }
 }

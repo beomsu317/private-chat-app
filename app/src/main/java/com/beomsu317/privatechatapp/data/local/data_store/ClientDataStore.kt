@@ -28,8 +28,15 @@ class ClientDataStore @Inject constructor(
     init {
         CoroutineScope(Dispatchers.IO).launch {
             dataStoreFlow.collectLatest {
+                Log.d("TAG", "${it}")
                 client.token = it.token
-                client.user = it.user
+                client.user = it.user.copy(
+                    photoUrl = if (it.user.photoUrl.isEmpty()) {
+                        "android.resource://com.beomsu317.privatechatapp/drawable/user_placeholder"
+                    } else {
+                        it.user.photoUrl
+                    }
+                )
             }
         }
     }

@@ -1,10 +1,19 @@
 package com.beomsu317.privatechatapp.presentation.profile
 
+import android.Manifest
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,17 +23,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.ImageLoader
+import coil.compose.*
+import coil.request.ImageRequest
+import coil.size.Size
 import com.beomsu317.privatechatapp.R
 import com.beomsu317.privatechatapp.domain.model.User
 import com.beomsu317.privatechatapp.presentation.common.OneTimeEvent
+import com.beomsu317.privatechatapp.presentation.components.ListDialog
+import com.beomsu317.privatechatapp.presentation.components.ListDialogEvent
 import com.beomsu317.privatechatapp.presentation.components.TopAppBar
 import com.beomsu317.privatechatapp.presentation.ui.theme.Crimson
 import com.beomsu317.privatechatapp.presentation.ui.theme.WhiteSmoke
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
+import java.io.File
 
 @Composable
 fun MyProfileScreen(
@@ -34,6 +57,8 @@ fun MyProfileScreen(
 ) {
     val state = viewModel.state
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
+    var edit by remember { mutableStateOf(false) }
+    var uri by remember { mutableStateOf<Uri?>(null) }
 
     LaunchedEffect(key1 = oneTimeEventFlow) {
         oneTimeEventFlow.collect { oneTimeEvent ->
@@ -58,10 +83,38 @@ fun MyProfileScreen(
                         text = "Profile",
                         fontWeight = FontWeight.SemiBold,
                     )
+                },
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                if (edit) {
+                                    viewModel.onEvent(MyProfileEvent.UploadProfileImage(uri = uri))
+                                }
+                                edit = !edit
+                            }
+                    ) {
+                        Text(
+                            text = if (!edit) "Edit" else "Save",
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.body2,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(40.dp))
-            ImageSection(user = state.user)
+            ProfileSection(
+                user = state.user,
+                edit = edit
+            ) {
+                it?.let {
+                    uri = it
+                }
+            }
             Spacer(modifier = Modifier.height(20.dp))
             Divider(modifier = Modifier.padding(horizontal = 40.dp))
             Spacer(modifier = Modifier.height(20.dp))
@@ -70,36 +123,205 @@ fun MyProfileScreen(
             SettingsSection(
                 onSignOut = {
                     viewModel.onEvent(MyProfileEvent.SignOut)
+                    showSnackbar("Successfully signed out", SnackbarDuration.Short)
                     onSignOut()
                 }
             )
         }
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.Center)
+            )
+        }
     }
 
-    if (state.isLoading) {
-        CircularProgressIndicator()
-    }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ImageSection(
-    user: User
+fun ProfileSection(
+    user: User,
+    edit: Boolean,
+    onSaveImage: (Uri) -> Unit
 ) {
+    val context = LocalContext.current
+    val interactionSource = remember { MutableInteractionSource() }
+    var showDialog by remember { mutableStateOf(false) }
+    var cameraUri by remember {
+        val photoFile = File.createTempFile(
+            "IMG_",
+            ".jpg",
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+        val uri = FileProvider.getUriForFile(
+            context,
+            context.applicationContext.packageName + ".provider",
+            photoFile
+        )
+        mutableStateOf(uri)
+    }
+
+    val imageLoader by remember {
+        mutableStateOf(
+            ImageLoader.Builder(context).build()
+        )
+    }
+
+    var bitmap: Bitmap? by remember {
+        mutableStateOf(null)
+    }
+
+    LaunchedEffect(key1 = user.photoUrl) {
+        val imageRequest = ImageRequest.Builder(context)
+            .data(user.photoUrl)
+            .crossfade(true)
+            .size(Size.ORIGINAL)
+            .target(
+                onSuccess = {
+                    bitmap = it.toBitmapOrNull()
+                }
+            )
+            .build()
+        imageLoader.enqueue(imageRequest)
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = {
+            if (it) {
+                val imageRequest = ImageRequest.Builder(context)
+                    .data(cameraUri)
+                    .crossfade(true)
+                    .size(Size.ORIGINAL)
+                    .target(
+                        onSuccess = {
+                            bitmap = it.toBitmapOrNull()
+                        }
+                    )
+                    .build()
+                imageLoader.enqueue(imageRequest)
+                onSaveImage(cameraUri)
+            }
+        })
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val imageRequest = ImageRequest.Builder(context)
+                .data(uri)
+                .crossfade(true)
+                .size(Size.ORIGINAL)
+                .target(
+                    onSuccess = {
+                        bitmap = it.toBitmapOrNull()
+                    }
+                )
+                .build()
+            imageLoader.enqueue(imageRequest)
+            Log.d("TAG", "ProfileSection: ${uri}")
+            onSaveImage(uri)
+        }
+    }
+
+    val cameraPermissionState = rememberPermissionState(
+        permission = Manifest.permission.CAMERA,
+        onPermissionResult = {
+            cameraLauncher.launch(cameraUri)
+        })
+
+
+    if (showDialog) {
+        ListDialog(
+            dialogEvents = arrayOf(
+                ListDialogEvent(
+                    text = "camera",
+                    resId = R.drawable.ic_baseline_camera_alt_24,
+                    onClick = {
+                        showDialog = false
+                        when (cameraPermissionState.status) {
+                            is PermissionStatus.Granted -> {
+                                cameraLauncher.launch(cameraUri)
+                            }
+                            is PermissionStatus.Denied -> {
+                                cameraPermissionState.launchPermissionRequest()
+                            }
+                        }
+                    }
+                ),
+                ListDialogEvent(
+                    text = "gallery",
+                    resId = R.drawable.ic_baseline_photo_24,
+                    onClick = {
+                        galleryLauncher.launch("image/*")
+                        showDialog = false
+                    }
+                )
+            ),
+            onClose = {
+                showDialog = false
+            }
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.user_placeholder),
-            contentDescription = "image"
-        )
+        Box(
+            modifier = Modifier,
+        ) {
+            AsyncImage(
+                model = bitmap,
+                contentDescription = "profile_image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(130.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Center)
+                    .clickable(interactionSource = interactionSource, indication = null) {
+                        if (edit) {
+                            showDialog = true
+                        }
+                    }
+                    .aspectRatio(1f)
+                    .border(width = 2.dp, color = MaterialTheme.colors.primary, CircleShape)
+                    .padding(2.dp)
+                    .border(width = 2.dp, color = Color.White, CircleShape)
+                    .padding(2.dp)
+            )
+
+            if (edit) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(WhiteSmoke)
+                        .align(Alignment.BottomEnd)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_baseline_camera_alt_24),
+                        contentDescription = "camera",
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .align(Alignment.Center),
+                        tint = MaterialTheme.colors.onBackground,
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(30.dp))
+
         Text(
-            text = user.displayName
+            text = user.displayName,
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = user.email
+            text = user.email,
+            color = Color.Gray,
+            style = MaterialTheme.typography.body2
         )
     }
 }
@@ -130,12 +352,16 @@ fun CountItem(
     ) {
         Text(
             text = count.toString(),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = text,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = Color.Gray,
+            style = MaterialTheme.typography.body2
         )
     }
 }
@@ -161,7 +387,7 @@ fun SettingsSection(
             Divider(modifier = Modifier.padding(horizontal = 20.dp))
             Spacer(modifier = Modifier.height(8.dp))
             SettingItem(
-                text = "Log out",
+                text = "Sign out",
                 color = Crimson,
                 resId = R.drawable.ic_baseline_logout_24,
                 onClick = {

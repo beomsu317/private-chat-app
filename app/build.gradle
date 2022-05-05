@@ -87,4 +87,6 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc03")
 
+    implementation "com.google.accompanist:accompanist-permissions:0.24.7-alpha"
+
 }

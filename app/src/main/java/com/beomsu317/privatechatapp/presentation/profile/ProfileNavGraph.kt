@@ -5,6 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.beomsu317.privatechatapp.presentation.CHAT_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.presentation.FRIENDS_GRAPH_ROUTE
 import com.beomsu317.privatechatapp.presentation.PROFILE_GRAPH_ROUTE
 import com.beomsu317.privatechatapp.presentation.startup.StartupScreen
 
@@ -24,12 +26,12 @@ fun NavGraphBuilder.profileNavGraph(
             MyProfileScreen(
                 showSnackbar = showSnackbar,
                 onSignOut = {
-//                    navController.findDestination(FRIENDS_GRAPH_ROUTE)?.let {
-//                        navController.popBackStack(it.id, true)
-//                    }
-//                    navController.findDestination(CHAT_GRAPH_ROUTE)?.let {
-//                        navController.popBackStack(it.id, true)
-//                    }
+                    navController.findDestination(FRIENDS_GRAPH_ROUTE)?.let {
+                        navController.popBackStack(it.id, true)
+                    }
+                    navController.findDestination(CHAT_GRAPH_ROUTE)?.let {
+                        navController.popBackStack(it.id, true)
+                    }
                     navController.navigate(StartupScreen.SignInScreen.route) {
                         popUpTo(ProfileScreen.MyProfileScreen.route) {
                             inclusive = true

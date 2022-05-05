@@ -59,9 +59,11 @@ object DataModule {
     @Singleton
     fun providePrivateChatRepository(
         api: PrivateChatApi,
-        clientDataStore: ClientDataStore
+        clientDataStore: ClientDataStore,
+        @ApplicationContext context: Context,
+        client: Client
     ): PrivateChatRepository =
-        PrivateChatRepositoryImpl(api, clientDataStore)
+        PrivateChatRepositoryImpl(api, clientDataStore, context, client)
 
     @Provides
     @Singleton
@@ -73,7 +75,8 @@ object DataModule {
             signInUseCase = SignInUseCase(repository),
             getProfileUseCase = GetProfileUseCase(repository),
             isSignedInUseCase = IsSignedInUseCase(repository),
-            signOutUseCase = SignOutUseCase(repository)
+            signOutUseCase = SignOutUseCase(repository),
+            uploadProfileImageUseCase = UploadProfileImageUseCase(repository)
         )
     }
 

@@ -1,6 +1,7 @@
 package com.beomsu317.privatechatapp.domain.repository
 
-import com.beomsu317.privatechatapp.domain.model.User
+import android.graphics.Bitmap
+import android.net.Uri
 
 interface PrivateChatRepository {
 
@@ -8,9 +9,11 @@ interface PrivateChatRepository {
 
     suspend fun loginUser(email: String, password: String)
 
-    suspend fun getProfile(): User
+    suspend fun getProfile()
 
     suspend fun isSigned(): Boolean
 
     suspend fun signOut()
+
+    suspend fun uploadProfileImage(uri: Uri)
 }
