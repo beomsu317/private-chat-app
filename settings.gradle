@@ -14,6 +14,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Private Chat App"
 include ':app'
+include ':core'
+include ':core-ui'
 include ':startup:startup_presentation'
 include ':startup:startup_domain'
 include ':startup:startup_data'
