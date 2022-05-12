@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserLoginResult(
-    val token: String,
-    val user: UserDto
+    val token: String
 )

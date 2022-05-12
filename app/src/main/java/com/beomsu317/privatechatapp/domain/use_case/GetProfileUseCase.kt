@@ -13,13 +13,13 @@ import javax.inject.Inject
 class GetProfileUseCase @Inject constructor(
     private val repository: PrivateChatRepository
 ) {
-    suspend operator fun invoke(): Flow<Resource<Unit>> = flow {
+    suspend operator fun invoke(): Flow<Resource<User>> = flow {
         try {
-            emit(Resource.Loading<Unit>())
-            repository.getProfile()
-            emit(Resource.Success<Unit>(data = Unit))
+            emit(Resource.Loading<User>())
+            val result = repository.getProfile()
+            emit(Resource.Success<User>(data = result))
         } catch (e: Exception) {
-            emit(Resource.Error<Unit>(e.localizedMessage))
+            emit(Resource.Error<User>(e.localizedMessage))
         }
     }
 }

@@ -1,24 +1,23 @@
 package com.beomsu317.privatechatapp.domain.use_case
 
-import android.graphics.Bitmap
-import android.net.Uri
 import com.beomsu317.privatechatapp.common.Resource
+import com.beomsu317.privatechatapp.domain.model.UserFriend
 import com.beomsu317.privatechatapp.domain.repository.PrivateChatRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.lang.Exception
 import javax.inject.Inject
 
-class UploadProfileImageUseCase @Inject constructor(
+class AddFriendUseCase @Inject constructor(
     private val repository: PrivateChatRepository
 ) {
-    suspend operator fun invoke(uri: Uri): Flow<Resource<String>> = flow {
+    suspend operator fun invoke(userFriend: UserFriend): Flow<Resource<Unit>> = flow {
         try {
-            emit(Resource.Loading<String>())
-            val result = repository.uploadProfileImage(uri)
-            emit(Resource.Success<String>(data = result))
+            emit(Resource.Loading<Unit>())
+            repository.addFriend(userFriend = userFriend)
+            emit(Resource.Success<Unit>(data = Unit))
         } catch (e: Exception) {
-            emit(Resource.Error<String>(message = e.localizedMessage))
+            emit(Resource.Error<Unit>(e.localizedMessage))
         }
     }
 }

@@ -33,7 +33,7 @@ fun NavGraphBuilder.startupNavGraph(
                 },
                 onNavigateFriendsList = {
                     navController.popBackStack()
-                    navController.navigate(BottomNavRoute.ProfileRoute.route) {
+                    navController.navigate(BottomNavRoute.FriendsRoute.route) {
                         popUpTo(STARTUP_GRAPH_ROUTE) {
                             inclusive = true
                         }

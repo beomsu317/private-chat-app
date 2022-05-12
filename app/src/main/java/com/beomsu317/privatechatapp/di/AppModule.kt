@@ -1,7 +1,9 @@
 package com.beomsu317.privatechatapp.di
 
 import android.content.Context
+import androidx.room.Room
 import com.beomsu317.privatechatapp.data.local.data_store.ClientDataStore
+import com.beomsu317.privatechatapp.data.local.room.PrivateChatDatabase
 import com.beomsu317.privatechatapp.data.remote.PrivateChatApi
 import com.beomsu317.privatechatapp.data.repository.PrivateChatRepositoryImpl
 import com.beomsu317.privatechatapp.domain.model.Client
@@ -23,7 +25,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DataModule {
+object AppModule {
 
     @Singleton
     @Provides
@@ -55,15 +57,26 @@ object DataModule {
             .create(PrivateChatApi::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun providePrivateChatDatabase(@ApplicationContext context: Context): PrivateChatDatabase {
+        return Room.databaseBuilder(
+            context,
+            PrivateChatDatabase::class.java,
+            "private_chat_db"
+        ).build()
+    }
+
     @Provides
     @Singleton
     fun providePrivateChatRepository(
         api: PrivateChatApi,
+        database: PrivateChatDatabase,
         clientDataStore: ClientDataStore,
         @ApplicationContext context: Context,
         client: Client
     ): PrivateChatRepository =
-        PrivateChatRepositoryImpl(api, clientDataStore, context, client)
+        PrivateChatRepositoryImpl(api, database, clientDataStore, context, client)
 
     @Provides
     @Singleton
@@ -76,8 +89,19 @@ object DataModule {
             getProfileUseCase = GetProfileUseCase(repository),
             isSignedInUseCase = IsSignedInUseCase(repository),
             signOutUseCase = SignOutUseCase(repository),
-            uploadProfileImageUseCase = UploadProfileImageUseCase(repository)
+            uploadProfileImageUseCase = UploadProfileImageUseCase(repository),
+            getFriendsUseCase = GetFriendsUseCase(repository),
+            getAllFriendsUseCase = GetAllFriendsUseCase(repository),
+            addFriendUseCase = AddFriendUseCase(repository),
+            deleteFriendUseCase = DeleteFriendUseCase(repository),
+            searchFriends = SearchFriendsUseCase(repository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideClient(): Client {
+        return Client()
     }
 
     @Provides

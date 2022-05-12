@@ -7,4 +7,9 @@ data class PrivateChatUseCases(
     val isSignedInUseCase: IsSignedInUseCase,
     val signOutUseCase: SignOutUseCase,
     val uploadProfileImageUseCase: UploadProfileImageUseCase,
+    val getFriendsUseCase: GetFriendsUseCase,
+    val getAllFriendsUseCase: GetAllFriendsUseCase,
+    val addFriendUseCase: AddFriendUseCase,
+    val deleteFriendUseCase: DeleteFriendUseCase,
+    val searchFriends: SearchFriendsUseCase
 )
