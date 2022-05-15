@@ -1,4 +1,4 @@
-package com.beomsu317.profile_presentation
+package com.beomsu317.profile_presentation.my_profile
 
 import com.beomsu317.core.domain.model.User
 

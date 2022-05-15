@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.beomsu317.core_ui.navigation.*
+import com.beomsu317.profile_presentation.my_profile.MyProfileScreen
+import com.beomsu317.profile_presentation.settings.SettingsScreen
 
 fun NavGraphBuilder.profileNavGraph(
     navController: NavHostController,
@@ -31,6 +33,16 @@ fun NavGraphBuilder.profileNavGraph(
                         }
                         launchSingleTop = true
                     }
+                },
+                onNavigateSettings = {
+                    navController.navigate(ProfileScreen.SettingsScreen.route)
+                }
+            )
+        }
+        composable(ProfileScreen.SettingsScreen.route) {
+            SettingsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

@@ -6,4 +6,5 @@ dependencies {
     "implementation"(AndroidX.coreKtx)
     "implementation"(Serialization.kotlinxSerializationJson)
     "implementation"(DataStore.dataStorePreferences)
+    "implementation"(DataStore.dataStore)
 }

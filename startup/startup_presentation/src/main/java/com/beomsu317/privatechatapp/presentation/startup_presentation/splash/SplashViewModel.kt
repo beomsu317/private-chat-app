@@ -2,9 +2,8 @@ package com.beomsu317.privatechatapp.presentation.startup_presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.beomsu317.core.domain.use_case.GetTokenUseCase
+import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.core_ui.common.OneTimeEvent
-import com.beomsu317.startup_domain.use_case.StartupUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -15,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val getTokenUseCase: GetTokenUseCase
+    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
     private val _oneTimeEvent = Channel<OneTimeEvent>()
@@ -27,12 +26,12 @@ class SplashViewModel @Inject constructor(
 
     private fun isSignedIn() {
         viewModelScope.launch {
-            val tokenDeffered = async { getTokenUseCase() }
+            val tokenDeffered = async { appDataStore.getToken() }
             val delayDeffered = async { delay(1000L) }
 
             delayDeffered.await()
             val token = tokenDeffered.await()
-            if (token.isNullOrEmpty()) {
+            if (token.isEmpty()) {
                 _oneTimeEvent.send(OneTimeEvent.NeedSignIn)
             } else {
                 _oneTimeEvent.send(OneTimeEvent.SignedIn)

@@ -1,4 +1,4 @@
-package com.beomsu317.profile_presentation
+package com.beomsu317.profile_presentation.my_profile
 
 import android.net.Uri
 import androidx.compose.runtime.getValue
@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
+import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.core.domain.model.User
-import com.beomsu317.core.domain.use_case.GetTokenUseCase
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.profile_domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyProfileViewModel @Inject constructor(
     private val profileUseCases: ProfileUseCases,
-    private val getTokenUseCase: GetTokenUseCase
+    private val appDataStore: AppDataStore
 ): ViewModel() {
 
     var state by mutableStateOf(MyProfileState())
@@ -48,7 +48,7 @@ class MyProfileViewModel @Inject constructor(
 
     private fun getProfile() {
         viewModelScope.launch {
-            val token = getTokenUseCase() ?: return@launch
+            val token = appDataStore.getToken()
             profileUseCases.getProfileUseCase(token).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
@@ -75,7 +75,7 @@ class MyProfileViewModel @Inject constructor(
     private fun uploadProfileImage(uri: Uri?) {
         uri?.let {
             viewModelScope.launch {
-                val token = getTokenUseCase() ?: return@launch
+                val token = appDataStore.getToken()
                 profileUseCases.uploadProfileImageUseCase(token = token, uri = uri).onEach { resource ->
                     when (resource) {
                         is Resource.Success -> {

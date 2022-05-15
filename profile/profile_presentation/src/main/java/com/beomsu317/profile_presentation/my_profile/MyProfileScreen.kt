@@ -1,4 +1,4 @@
-package com.beomsu317.profile_presentation
+package com.beomsu317.profile_presentation.my_profile
 
 import android.Manifest
 import android.graphics.Bitmap
@@ -55,6 +55,7 @@ import java.io.File
 fun MyProfileScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onSignOut: () -> Unit,
+    onNavigateSettings: () -> Unit,
     viewModel: MyProfileViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -127,7 +128,8 @@ fun MyProfileScreen(
                     viewModel.onEvent(MyProfileEvent.SignOut)
                     showSnackbar("Successfully signed out", SnackbarDuration.Short)
                     onSignOut()
-                }
+                },
+                onNavigateSettings = onNavigateSettings
             )
         }
         if (state.isLoading) {
@@ -395,7 +397,8 @@ fun CountItem(
 
 @Composable
 fun SettingsSection(
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onNavigateSettings: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -408,8 +411,9 @@ fun SettingsSection(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            SettingItem(text = "Settings", resId = R.drawable.ic_baseline_settings_24, onClick = {})
-            SettingItem(text = "Information", resId = R.drawable.ic_baseline_info_24, onClick = {})
+            SettingItem(text = "Settings", resId = R.drawable.ic_baseline_settings_24, onClick = {
+                onNavigateSettings()
+            })
             Spacer(modifier = Modifier.height(8.dp))
             Divider(modifier = Modifier.padding(horizontal = 20.dp))
             Spacer(modifier = Modifier.height(8.dp))
