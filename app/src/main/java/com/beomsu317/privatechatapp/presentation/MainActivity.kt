@@ -18,7 +18,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.beomsu317.privatechatapp.presentation.friends.FriendsScreen
+import com.beomsu317.core_ui.navigation.*
 import com.beomsu317.privatechatapp.presentation.ui.theme.PrivateChatAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -44,7 +44,10 @@ class MainActivity : ComponentActivity() {
                         innerPadding = innerPadding,
                         showSnackbar = { message, duration ->
                             scope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(message = message, duration = duration)
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = message,
+                                    duration = duration
+                                )
                             }
                         })
                 }

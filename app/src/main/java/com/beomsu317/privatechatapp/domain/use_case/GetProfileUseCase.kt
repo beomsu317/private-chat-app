@@ -1,8 +1,6 @@
 package com.beomsu317.privatechatapp.domain.use_case
 
-import android.util.Log
-import com.beomsu317.privatechatapp.common.Resource
-import com.beomsu317.privatechatapp.data.remote.response.PrivateChatResponse
+import com.beomsu317.core.common.Resource
 import com.beomsu317.privatechatapp.domain.model.User
 import com.beomsu317.privatechatapp.domain.repository.PrivateChatRepository
 import kotlinx.coroutines.flow.Flow

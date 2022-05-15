@@ -1,11 +1,10 @@
 package com.beomsu317.privatechatapp.data.remote
 
-import com.beomsu317.privatechatapp.data.remote.dto.UserDto
 import com.beomsu317.privatechatapp.data.remote.request.AddFriendRequest
 import com.beomsu317.privatechatapp.data.remote.request.DeleteFriendRequest
+import com.beomsu317.core.data.remote.response.PrivateChatResponse
 import com.beomsu317.privatechatapp.data.remote.request.UserLoginRequest
 import com.beomsu317.privatechatapp.data.remote.request.UserRegisterRequest
-import com.beomsu317.privatechatapp.data.remote.response.PrivateChatResponse
 import com.beomsu317.privatechatapp.data.remote.result.*
 import okhttp3.MultipartBody
 import retrofit2.Response

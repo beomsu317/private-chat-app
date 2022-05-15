@@ -13,9 +13,9 @@ interface PrivateChatRepository {
 
     suspend fun loginUser(email: String, password: String)
 
-    suspend fun getProfile(): User
-
     suspend fun isSigned(): Boolean
+
+    suspend fun getProfile(): User
 
     suspend fun signOut()
 

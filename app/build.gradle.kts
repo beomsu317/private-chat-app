@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = ProjectConfig.compileSdk
 
     defaultConfig {
-        applicationId = "com.beomsu317.privatechatapp"
-        minSdk = 21
-        targetSdk = 32
-        versionCode = 1
-        versionName = "0.0.1"
+        applicationId = ProjectConfig.appId
+        minSdk = ProjectConfig.minSdk
+        targetSdk = ProjectConfig.targetSdk
+        versionCode = ProjectConfig.versionCode
+        versionName = ProjectConfig.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -86,11 +86,28 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.24.7-alpha")
 
-    implementation("androidx.datastore:datastore:1.0.0")
+//    implementation("io.coil-kt:coil-compose:2.0.0-rc03")
 
-    implementation("io.coil-kt:coil-compose:2.0.0-rc03")
+//    implementation("com.google.accompanist:accompanist-permissions:0.24.7-alpha")
 
-    implementation("com.google.accompanist:accompanist-permissions:0.24.7-alpha")
+//    implementation("me.saket.swipe:swipe:1.0.0")
 
-    implementation("me.saket.swipe:swipe:1.0.0")
+    implementation(project(Modules.core))
+    implementation(project(Modules.coreUi))
+
+    implementation(project(Modules.startupData))
+    implementation(project(Modules.startupDomain))
+    implementation(project(Modules.startupPresentation))
+
+    implementation(project(Modules.friendsData))
+    implementation(project(Modules.friendsDomain))
+    implementation(project(Modules.friendsPresentation))
+
+    implementation(project(Modules.chatData))
+    implementation(project(Modules.chatDomain))
+    implementation(project(Modules.chatPresentation))
+
+    implementation(project(Modules.profileData))
+    implementation(project(Modules.profileDomain))
+    implementation(project(Modules.profilePresentation))
 }

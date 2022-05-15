@@ -1,0 +1,49 @@
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "kotlin-kapt"
+apply plugin: "dagger.hilt.android.plugin"
+apply plugin: "kotlinx-serialization"
+
+android {
+    compileSdk ProjectConfig.compileSdk
+
+    defaultConfig {
+        minSdk ProjectConfig.minSdk
+        targetSdk ProjectConfig.targetSdk
+        versionCode ProjectConfig.versionCode
+        versionName ProjectConfig.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            minifyEnabled false
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility(JavaVersion.VERSION_1_8)
+        targetCompatibility(JavaVersion.VERSION_1_8)
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+dependencies {
+    implementation("com.google.dagger:hilt-android:2.38.1")
+    kapt("com.google.dagger:hilt-compiler:2.38.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+}

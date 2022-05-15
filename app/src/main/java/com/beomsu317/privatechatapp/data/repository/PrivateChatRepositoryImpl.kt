@@ -2,10 +2,8 @@ package com.beomsu317.privatechatapp.data.repository
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
-import com.beomsu317.privatechatapp.data.local.data_store.ClientDataStore
+import com.beomsu317.core.data.local.data_store.AppDataStoreImpl
 import com.beomsu317.privatechatapp.data.local.room.PrivateChatDatabase
-import com.beomsu317.privatechatapp.data.local.room.entity.FriendEntity
 import com.beomsu317.privatechatapp.data.local.room.entity.toFriend
 import com.beomsu317.privatechatapp.data.remote.PrivateChatApi
 import com.beomsu317.privatechatapp.data.remote.dto.toEntity
@@ -16,9 +14,7 @@ import com.beomsu317.privatechatapp.data.remote.request.UserLoginRequest
 import com.beomsu317.privatechatapp.data.remote.request.UserRegisterRequest
 import com.beomsu317.privatechatapp.domain.model.*
 import com.beomsu317.privatechatapp.domain.repository.PrivateChatRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -29,7 +25,7 @@ import javax.inject.Inject
 class PrivateChatRepositoryImpl @Inject constructor(
     private val api: PrivateChatApi,
     private val database: PrivateChatDatabase,
-    private val clientDataStore: ClientDataStore,
+    private val clientDataStore: AppDataStoreImpl,
     private val context: Context,
     private val client: Client
 ) : PrivateChatRepository {
@@ -64,11 +60,6 @@ class PrivateChatRepositoryImpl @Inject constructor(
         } else {
             val result = response.body()?.result ?: throw Exception("login user error occured")
             val token = result.token
-            clientDataStore.updateClient(
-                Client(
-                    token = token
-                )
-            )
         }
     }
 
@@ -79,33 +70,14 @@ class PrivateChatRepositoryImpl @Inject constructor(
         }
         val result = response.body()?.result ?: throw Exception("get profile error occured")
         val userDto = result.user
-        clientDataStore.updateClient(
-            client.copy(
-                user = User(
-                    id = userDto.id,
-                    email = userDto.email,
-                    displayName = userDto.displayName,
-                    photoUrl = userDto.photoUrl,
-                    friends = userDto.friends.map { it.toEntity() }.toSet(),
-                    rooms = userDto.rooms
-                )
-            )
-        )
         return userDto.toEntity()
     }
 
     override suspend fun isSigned(): Boolean {
-        val client = clientDataStore.dataStoreFlow.firstOrNull()
-        if (client?.token != null) {
-            return true
-        }
         return false
     }
 
     override suspend fun signOut() {
-        clientDataStore.updateClient(
-            Client()
-        )
     }
 
     override suspend fun uploadProfileImage(uri: Uri): String {
@@ -122,11 +94,6 @@ class PrivateChatRepositoryImpl @Inject constructor(
         }
         val result =
             response.body()?.result ?: throw Exception("upload profile image error occured")
-        clientDataStore.updateClient(
-            client.copy(
-                user = client.user.copy(photoUrl = result.photoUrl)
-            )
-        )
         return result.photoUrl
     }
 
@@ -159,11 +126,6 @@ class PrivateChatRepositoryImpl @Inject constructor(
         }
         val result = response.body()?.result ?: throw Exception("add friend error occured")
         database.dao.insertFriends(result.friends.map { it.toEntity() }.toSet())
-        clientDataStore.updateClient(
-            client = client.copy(
-                user = client.user.copy(friends = client.user.friends + userFriend),
-            )
-        )
     }
 
     override suspend fun deleteFriend(friend: Friend) {
@@ -174,11 +136,6 @@ class PrivateChatRepositoryImpl @Inject constructor(
             throw Exception(response.message())
         }
         database.dao.deleteFriend(friendEntity = friend.toEntity())
-        clientDataStore.updateClient(
-            client = client.copy(
-                user = client.user.copy(friends = client.user.friends - deleteFriend.map { it.toEntity() }),
-            ),
-        )
     }
 
     override suspend fun searchFriends(searchText: String): List<Friend> {
