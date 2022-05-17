@@ -9,12 +9,3 @@ data class Friend(
     val photoUrl: String,
     val displayName: String
 )
-
-//fun Friend.toEntity(): FriendEntity {
-//    return FriendEntity(
-//        id = id,
-//        email = email,
-//        photoUrl = photoUrl,
-//        displayName = displayName
-//    )
-//}

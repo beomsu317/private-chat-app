@@ -4,4 +4,15 @@ apply {
 
 dependencies {
     "implementation"(project(Modules.core))
+    "implementation"(project(Modules.friendsDomain))
+
+    "implementation"(Network.retrofit)
+    "implementation"(Network.okhttp)
+
+    "implementation"(Serialization.kotlinxSerializationJson)
+    "implementation"(Serialization.kotlinxSerializationConverter)
+
+    "implementation"(Room.roomKtx)
+    "api"(Room.roomRuntime)
+    "kapt"(Room.roomCompiler)
 }

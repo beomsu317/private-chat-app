@@ -6,7 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
+import com.beomsu317.core.domain.data_store.AppDataStore
+import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.common.OneTimeEvent
+import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -18,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FriendsListViewModel @Inject constructor(
-//    private val privateChatUseCases: PrivateChatUseCases
+    private val friendsUseCases: FriendsUseCases,
+    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
     var state by mutableStateOf(FriendsListState())
@@ -29,76 +33,81 @@ class FriendsListViewModel @Inject constructor(
     var searchJob: Job? = null
 
     init {
-//        getFriends(true)
+        getFriends(true)
     }
 
     fun onEvent(event: FriendsListEvent) {
         when (event) {
             is FriendsListEvent.Search -> {
-//                search(searchText = event.searchText)
+                search(searchText = event.searchText)
             }
             is FriendsListEvent.DeleteFriend -> {
-//                deleteFriend(friend = event.friend)
+                deleteFriend(friend = event.friend)
             }
             is FriendsListEvent.RefreshFriends -> {
-//                getFriends(event.refresh)
+                getFriends(event.refresh)
             }
         }
     }
 
-//    private fun getFriends(refresh: Boolean) {
-//        viewModelScope.launch {
-//            state = state.copy(isLoading = true)
-//            privateChatUseCases.getFriendsUseCase(refresh).onEach {
-//                state = state.copy(friends = it, isLoading = false)
-//            }.launchIn(viewModelScope)
-//        }
-//    }
-//
-//    private fun search(searchText: String) {
-//        searchJob?.cancel()
-//        searchJob = viewModelScope.launch {
-//            privateChatUseCases.searchFriends(searchText).onEach { resource ->
-//                when (resource) {
-//                    is Resource.Success -> {
-//                        state = state.copy(isLoading = false, friends = resource.data?.toSet() ?: emptySet())
-//                    }
-//                    is Resource.Error -> {
-//                        _oneTimeEvent.send(
-//                            OneTimeEvent.ShowSnackbar(
-//                                resource.message ?: "An unknown error occured"
-//                            )
-//                        )
-//                        state = state.copy(isLoading = false)
-//                    }
-//                    is Resource.Loading -> {
-//                        state = state.copy(isLoading = true)
-//                    }
-//                }
-//            }.launchIn(viewModelScope)
-//        }
-//    }
-//
-//    private fun deleteFriend(friend: Friend) {
-//        viewModelScope.launch {
-//            privateChatUseCases.deleteFriendUseCase(friend = friend).onEach { resource ->
-//                when (resource) {
-//                    is Resource.Success -> {
-//                        state = state.copy(friends = state.friends - friend, isLoading = false)
-//                    }
-//                    is Resource.Error -> {
-//                        _oneTimeEvent.send(
-//                            OneTimeEvent.ShowSnackbar(
-//                                resource.message ?: "An unknown error occured"
-//                            )
-//                        )
-//                        state = state.copy(isLoading = false)
-//                    }
-//                    is Resource.Loading -> {
-//                        state = state.copy(isLoading = true)
-//                    }
-//                }
-//            }.launchIn(viewModelScope)
-//        }
-//    }
+    private fun getFriends(refresh: Boolean) {
+        viewModelScope.launch {
+            val token = appDataStore.getToken()
+            state = state.copy(isLoading = true)
+            friendsUseCases.getMyFriendsUseCase(token, refresh).onEach {
+                state = state.copy(friends = it, isLoading = false)
+            }.launchIn(viewModelScope)
+        }
+    }
+
+    private fun search(searchText: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            friendsUseCases.searchFriendsUseCase(searchText).onEach { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        state = state.copy(
+                            isLoading = false,
+                            friends = resource.data?.toSet() ?: emptySet()
+                        )
+                    }
+                    is Resource.Error -> {
+                        _oneTimeEvent.send(
+                            OneTimeEvent.ShowSnackbar(
+                                resource.message ?: "An unknown error occured"
+                            )
+                        )
+                        state = state.copy(isLoading = false)
+                    }
+                    is Resource.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+    }
+
+    private fun deleteFriend(friend: Friend) {
+        viewModelScope.launch {
+            val token = appDataStore.getToken()
+            friendsUseCases.deleteFriendUseCase(token = token, friend = friend).onEach { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        state = state.copy(friends = state.friends - friend, isLoading = false)
+                    }
+                    is Resource.Error -> {
+                        _oneTimeEvent.send(
+                            OneTimeEvent.ShowSnackbar(
+                                resource.message ?: "An unknown error occured"
+                            )
+                        )
+                        state = state.copy(isLoading = false)
+                    }
+                    is Resource.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+    }
 }

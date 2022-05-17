@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -26,6 +27,8 @@ import com.beomsu317.core_ui.components.PriorityDialog
 import com.beomsu317.core.R
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun AddFriendsScreen(
@@ -42,7 +45,12 @@ fun AddFriendsScreen(
                 showDialog = false
             },
             onOkClick = { priority ->
-                viewModel.onEvent(AddFriendsEvent.AddFriend(friendId = friendId, priority = priority))
+                viewModel.onEvent(
+                    AddFriendsEvent.AddFriend(
+                        friendId = friendId,
+                        priority = priority
+                    )
+                )
                 showDialog = false
             }
         )
@@ -127,7 +135,7 @@ fun FriendItem(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 10.dp),
+                    .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -172,11 +180,12 @@ fun FriendItem(
                     )
                 }
 
-                TextButton(
+                Button(
                     onClick = {
                         onFriendAddClick(friend.id)
                     },
-                    contentPadding = PaddingValues()
+                    contentPadding = PaddingValues(),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = "Add"

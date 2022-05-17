@@ -1,6 +1,7 @@
 package com.beomsu317.profile_presentation.my_profile
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -48,20 +49,8 @@ class MyProfileViewModel @Inject constructor(
 
     private fun getProfile() {
         viewModelScope.launch {
-            val token = appDataStore.getToken()
-            profileUseCases.getProfileUseCase(token).onEach { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        state = state.copy(isLoading = false, user = resource.data ?: User())
-                    }
-                    is Resource.Error -> {
-                        _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(resource.message ?: "An unexpected error occured"))
-                        state = state.copy(isLoading = false)
-                    }
-                    is Resource.Loading -> {
-                        state = state.copy(isLoading = true)
-                    }
-                }
+            appDataStore.userFlow.onEach {
+                state = state.copy(user = it)
             }.launchIn(viewModelScope)
         }
     }

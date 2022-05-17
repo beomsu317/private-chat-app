@@ -56,8 +56,8 @@ class SignInViewModel @Inject constructor(
                     when (resource) {
                         is Resource.Success -> {
                             _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Successfully signed in"))
-                            _oneTimeEvent.send(OneTimeEvent.SignedIn)
                             state = state.copy(isLoading = false)
+                            _oneTimeEvent.send(OneTimeEvent.SignedIn)
                         }
                         is Resource.Error -> {
                             _oneTimeEvent.send(

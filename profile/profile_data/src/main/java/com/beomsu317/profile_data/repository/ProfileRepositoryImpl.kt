@@ -2,9 +2,9 @@ package com.beomsu317.profile_data.repository
 
 import android.content.Context
 import android.net.Uri
+import com.beomsu317.core.data.mapper.toUser
 import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.core.domain.model.User
-import com.beomsu317.privatechatapp.data.remote.dto.toUser
 import com.beomsu317.profile_data.remote.PrivateChatApi
 import com.beomsu317.profile_domain.repository.ProfileRepository
 import okhttp3.MediaType.Companion.toMediaType
@@ -24,12 +24,14 @@ class ProfileRepositoryImpl(
             throw Exception(response.message())
         }
         val result = response.body()?.result ?: throw Exception("Get profile error occured")
-        val userDto = result.user
-        return userDto.toUser()
+        val user = result.user.toUser()
+        appDataStore.updateUser(user)
+        return user
     }
 
     override suspend fun signOut() {
         appDataStore.updateToken(token = "")
+        appDataStore.updateUser(user = User())
     }
 
     override suspend fun uploadProfileImage(token: String, uri: Uri): String {
@@ -44,8 +46,10 @@ class ProfileRepositoryImpl(
         if (!response.isSuccessful) {
             throw Exception(response.message())
         }
-        val result =
-            response.body()?.result ?: throw Exception("Upload profile image error occured")
-        return result.photoUrl
+        val photoUrl =
+            response.body()?.result?.photoUrl ?: throw Exception("Upload profile image error occured")
+        appDataStore.updateUser(appDataStore.getUser().copy(photoUrl = photoUrl))
+        return photoUrl
     }
+
 }

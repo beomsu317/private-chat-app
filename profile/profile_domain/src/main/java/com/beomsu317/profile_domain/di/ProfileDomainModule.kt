@@ -1,10 +1,7 @@
 package com.beomsu317.profile_domain.di
 
 import com.beomsu317.profile_domain.repository.ProfileRepository
-import com.beomsu317.profile_domain.use_case.GetProfileUseCase
-import com.beomsu317.profile_domain.use_case.ProfileUseCases
-import com.beomsu317.profile_domain.use_case.SignOutUseCase
-import com.beomsu317.profile_domain.use_case.UploadProfileImageUseCase
+import com.beomsu317.profile_domain.use_case.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +20,7 @@ object ProfileDomainModule {
         return ProfileUseCases(
             getProfileUseCase = GetProfileUseCase(repository),
             signOutUseCase = SignOutUseCase(repository),
-            uploadProfileImageUseCase = UploadProfileImageUseCase(repository)
+            uploadProfileImageUseCase = UploadProfileImageUseCase(repository),
         )
     }
 }

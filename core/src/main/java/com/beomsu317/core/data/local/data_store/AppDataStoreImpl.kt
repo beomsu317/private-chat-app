@@ -1,15 +1,17 @@
 package com.beomsu317.core.data.local.data_store
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.beomsu317.core.data.local.data_store.serializer.SettingsSerializer
+import com.beomsu317.core.data.local.data_store.serializer.UserSerializer
 import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.core.domain.model.Settings
+import com.beomsu317.core.domain.model.User
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -26,6 +28,13 @@ class AppDataStoreImpl @Inject constructor(
     override val tokenFlow: Flow<String> = context.tokenDataStore.data.map { preferences ->
         preferences[TOKEN_KEY] ?: ""
     }
+
+    override val Context.userDataStore: DataStore<User> by dataStore(
+        fileName = "user.pb",
+        serializer = UserSerializer()
+    )
+
+    override val userFlow: Flow<User> = context.userDataStore.data
 
     override val Context.settingsDataStore: DataStore<Settings> by dataStore(
         fileName = "settings.pb",
@@ -48,8 +57,21 @@ class AppDataStoreImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateUser(user: User) {
+        withContext(dispatcher) {
+            context.userDataStore.updateData {
+                user
+            }
+        }
+    }
+
+    override suspend fun getUser(): User {
+        return withContext(dispatcher) {
+            userFlow.first()
+        }
+    }
+
     override suspend fun updateSettings(settings: Settings) {
-//        Log.d("TAG", "updateSettings: ${settings}")
         withContext(dispatcher) {
             context.settingsDataStore.updateData {
                 settings

@@ -1,11 +1,11 @@
 package com.beomsu317.startup_data.repository
 
+import com.beomsu317.core.data.mapper.toUser
 import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.startup_data.remote.PrivateChatApi
-import com.beomsu317.startup_data.remote.request.UserLoginRequest
+import com.beomsu317.startup_data.remote.request.UserSignInRequest
 import com.beomsu317.startup_data.remote.request.UserRegisterRequest
 import com.beomsu317.startup_domain.repository.StartupRepository
-import kotlinx.coroutines.flow.Flow
 import java.lang.Exception
 
 class StartupRepositoryImpl(
@@ -33,8 +33,8 @@ class StartupRepositoryImpl(
     }
 
     override suspend fun loginUser(email: String, password: String) {
-        val response = api.loginUser(
-            UserLoginRequest(
+        val response = api.signInUser(
+            UserSignInRequest(
                 email = email,
                 password = password
             )
@@ -42,8 +42,10 @@ class StartupRepositoryImpl(
         if (!response.isSuccessful) {
             throw Exception(response.message())
         }
-        val token = response.body()?.result?.token ?: throw Exception("Login user error occured")
+        val result = response.body()?.result ?: throw Exception("Sign in user error occured")
+        val token = result.token
+        val userDto = result.user
         appDataStore.updateToken(token)
+        appDataStore.updateUser(userDto.toUser())
     }
-
 }

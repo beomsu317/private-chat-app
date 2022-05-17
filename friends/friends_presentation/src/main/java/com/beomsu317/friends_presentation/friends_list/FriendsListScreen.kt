@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +30,8 @@ import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
 import com.beomsu317.core_ui.components.SearchTextField
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -86,14 +89,11 @@ fun FriendsListScreen(
                     friends = state.friends,
                     onDeleteFriend = { friend ->
                         viewModel.onEvent(FriendsListEvent.DeleteFriend(friend = friend))
+                    },
+                    isLoading = state.isLoading,
+                    onRefresh = {
+                        viewModel.onEvent(FriendsListEvent.RefreshFriends(refresh = true))
                     }
-                )
-            }
-
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
                 )
             }
         }
@@ -111,22 +111,32 @@ fun SearchSection(
 @Composable
 fun FriendsListSection(
     friends: Set<Friend>,
+    isLoading: Boolean,
+    onRefresh: () -> Unit,
     onDeleteFriend: (Friend) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
+
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing = isLoading),
+        onRefresh = {
+            onRefresh()
+        }
     ) {
-        items(friends.toList()) {
-            Box(
-               modifier = Modifier.animateItemPlacement(
-                   animationSpec = tween(durationMillis = 600)
-               )
-            ) {
-                Divider(modifier = Modifier.padding(horizontal = 20.dp))
-                FriendItem(
-                    friend = it,
-                    onDeleteFriend = onDeleteFriend
-                )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(friends.toList()) {
+                Box(
+                    modifier = Modifier.animateItemPlacement(
+                        animationSpec = tween(durationMillis = 600)
+                    )
+                ) {
+                    Divider(modifier = Modifier.padding(horizontal = 20.dp))
+                    FriendItem(
+                        friend = it,
+                        onDeleteFriend = onDeleteFriend
+                    )
+                }
             }
         }
     }
@@ -189,48 +199,16 @@ fun FriendItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = friend.displayName
+                    text = friend.displayName,
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = friend.email
+                    text = friend.email,
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray
                 )
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun SwipeableSample() {
-    val archive = SwipeAction(
-        icon = painterResource(R.drawable.ic_baseline_photo_24),
-        background = Color.Green,
-        onSwipe = { }
-    )
-
-    val snooze = SwipeAction(
-        icon = painterResource(R.drawable.ic_baseline_camera_alt_24),
-        background = Color.Yellow,
-        isUndo = true,
-        onSwipe = { },
-    )
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        SwipeableActionsBox(
-            startActions = listOf(archive),
-            endActions = listOf(snooze)
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .height(50.dp)
-                    .background(Color.DarkGray)
-            ) {
-
             }
         }
     }
