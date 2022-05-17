@@ -10,7 +10,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -41,9 +40,10 @@ import coil.size.Size
 import com.beomsu317.core.R
 import com.beomsu317.core.domain.model.User
 import com.beomsu317.core_ui.common.OneTimeEvent
-import com.beomsu317.core_ui.components.ListDialog
-import com.beomsu317.core_ui.components.ListDialogEvent
+import com.beomsu317.core_ui.common.debounceClickable
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
+import com.beomsu317.core_ui.components.dialog.ListDialog
+import com.beomsu317.core_ui.components.dialog.ListDialogEvent
 import com.beomsu317.core_ui.theme.Crimson
 import com.beomsu317.core_ui.theme.WhiteSmoke
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -92,7 +92,7 @@ fun MyProfileScreen(
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .clip(CircleShape)
-                            .clickable {
+                            .debounceClickable {
                                 if (edit) {
                                     viewModel.onEvent(MyProfileEvent.UploadProfileImage(uri = uri))
                                 }
@@ -303,7 +303,7 @@ fun ProfileSection(
                     .size(130.dp)
                     .padding(4.dp)
                     .clip(CircleShape)
-                    .clickable(interactionSource = interactionSource, indication = null) {
+                    .debounceClickable (interactionSource = interactionSource, indication = null) {
                         if (edit) {
                             showDialog = true
                         }
@@ -439,7 +439,7 @@ fun SettingItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
+            .debounceClickable {
                 onClick()
             },
     ) {

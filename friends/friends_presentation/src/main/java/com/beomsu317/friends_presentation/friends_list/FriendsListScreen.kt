@@ -28,8 +28,10 @@ import coil.size.Size
 import com.beomsu317.core.R
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.common.OneTimeEvent
+import com.beomsu317.core_ui.common.debounceClickable
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
 import com.beomsu317.core_ui.components.SearchTextField
+import com.beomsu317.core_ui.components.button.DebounceFloatingActionButton
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import me.saket.swipe.SwipeAction
@@ -39,6 +41,7 @@ import me.saket.swipe.SwipeableActionsBox
 fun FriendsListScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onAddFriendButtonClick: () -> Unit,
+    onNavigateFriendProfile: () -> Unit,
     viewModel: FriendsListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -60,7 +63,7 @@ fun FriendsListScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingActionButton(
+            DebounceFloatingActionButton(
                 onClick = {
                     onAddFriendButtonClick()
                 },
@@ -93,7 +96,8 @@ fun FriendsListScreen(
                     isLoading = state.isLoading,
                     onRefresh = {
                         viewModel.onEvent(FriendsListEvent.RefreshFriends(refresh = true))
-                    }
+                    },
+                    onNavigateFriendProfile = onNavigateFriendProfile
                 )
             }
         }
@@ -113,7 +117,8 @@ fun FriendsListSection(
     friends: Set<Friend>,
     isLoading: Boolean,
     onRefresh: () -> Unit,
-    onDeleteFriend: (Friend) -> Unit
+    onDeleteFriend: (Friend) -> Unit,
+    onNavigateFriendProfile: () -> Unit
 ) {
 
     SwipeRefresh(
@@ -134,7 +139,8 @@ fun FriendsListSection(
                     Divider(modifier = Modifier.padding(horizontal = 20.dp))
                     FriendItem(
                         friend = it,
-                        onDeleteFriend = onDeleteFriend
+                        onDeleteFriend = onDeleteFriend,
+                        onNavigateFriendProfile = onNavigateFriendProfile
                     )
                 }
             }
@@ -146,7 +152,8 @@ fun FriendsListSection(
 @Composable
 fun FriendItem(
     friend: Friend,
-    onDeleteFriend: (Friend) -> Unit
+    onDeleteFriend: (Friend) -> Unit,
+    onNavigateFriendProfile: () -> Unit
 ) {
     SwipeableActionsBox(
         endActions = listOf(
@@ -169,6 +176,9 @@ fun FriendItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .background(MaterialTheme.colors.background)
+                .debounceClickable {
+                    onNavigateFriendProfile()
+                }
                 .padding(horizontal = 20.dp, vertical = 10.dp)
         ) {
             AsyncImage(

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.beomsu317.core.R
+import com.beomsu317.core_ui.components.DebounceButton
 
 @Composable
 fun IntroScreen(
@@ -54,7 +55,7 @@ fun IntroScreen(
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(50.dp))
-            Button(
+            DebounceButton(
                 onClick = {
                     onStartButtonClick()
                 },

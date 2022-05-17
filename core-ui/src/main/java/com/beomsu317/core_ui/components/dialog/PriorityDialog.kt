@@ -6,7 +6,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -15,7 +14,7 @@ import androidx.compose.ui.window.Dialog
 @Composable
 fun PriorityDialog(
     onClose: () -> Unit,
-    onOkClick: (Int) -> Unit
+    onConfirmClick: (Int) -> Unit
 ) {
     var sliderPosition by remember { mutableStateOf(2f) }
     Dialog(
@@ -29,7 +28,7 @@ fun PriorityDialog(
                 modifier = Modifier
                     .background(MaterialTheme.colors.background)
                     .padding(top = 10.dp, start = 10.dp, end = 10.dp)
-                ) {
+            ) {
                 Text(
                     text = "Select Priority",
                     style = MaterialTheme.typography.h6,
@@ -43,17 +42,20 @@ fun PriorityDialog(
                     },
                     valueRange = 0f..4f,
                     steps = 3,
-                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colors.primary, activeTrackColor = MaterialTheme.colors.primary)
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colors.primary,
+                        activeTrackColor = MaterialTheme.colors.primary
+                    )
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = {
-                        onOkClick(sliderPosition.toInt())
+                        onConfirmClick(sliderPosition.toInt())
                     }) {
                         Text(
-                            text = "Ok"
+                            text = "OK"
                         )
                     }
                 }
@@ -65,5 +67,5 @@ fun PriorityDialog(
 @Preview
 @Composable
 fun PriorityDialogPreview() {
-    PriorityDialog(onClose = {}, onOkClick = {})
+    PriorityDialog(onClose = {}, onConfirmClick = {})
 }

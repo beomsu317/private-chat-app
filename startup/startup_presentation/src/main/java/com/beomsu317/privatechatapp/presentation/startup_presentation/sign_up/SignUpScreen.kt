@@ -28,6 +28,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.beomsu317.core.R
 import com.beomsu317.core_ui.common.Emojis
 import com.beomsu317.core_ui.common.OneTimeEvent
+import com.beomsu317.core_ui.components.DebounceButton
+import com.beomsu317.core_ui.components.button.DebounceIconButton
 import kotlinx.coroutines.flow.collect
 
 @Composable
@@ -186,7 +188,7 @@ fun SignUpSection(
                 )
             },
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                DebounceIconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         painter = painterResource(
                             id = if (passwordVisible) {
@@ -227,7 +229,7 @@ fun SignUpSection(
                 )
             },
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                DebounceIconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         painter = painterResource(
                             id = if (passwordVisible) {
@@ -259,7 +261,7 @@ fun SignUpSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
+        DebounceButton(
             onClick = {
                 onSignUp(displayName, email, password, confirmPassword)
             },

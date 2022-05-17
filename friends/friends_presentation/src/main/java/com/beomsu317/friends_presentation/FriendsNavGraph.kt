@@ -24,6 +24,9 @@ fun NavGraphBuilder.friendsNavGraph(
                 showSnackbar = showSnackbar,
                 onAddFriendButtonClick = {
                     navController.navigate(FriendsScreen.AddFriendScreen.route)
+                },
+                onNavigateFriendProfile = {
+                    navController.navigate(FriendsScreen.FriendProfileScreen.route)
                 }
             )
         }

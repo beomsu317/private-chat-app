@@ -28,6 +28,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.beomsu317.core_ui.common.Emojis
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.core.R
+import com.beomsu317.core_ui.components.DebounceButton
+import com.beomsu317.core_ui.components.button.DebounceIconButton
+import com.beomsu317.core_ui.components.button.DebounceTextButton
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
@@ -154,7 +157,7 @@ fun AccountSection(
                 )
             },
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                DebounceIconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         painter = painterResource(
                             id = if (passwordVisible) {
@@ -190,7 +193,7 @@ fun AccountSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(
+        DebounceButton(
             onClick = {
                 onSignInButtonClick(email.trim(), password.trim())
             },
@@ -218,7 +221,7 @@ fun AccountSection(
                 text = "Don't have an account?",
                 style = MaterialTheme.typography.body1
             )
-            TextButton(
+            DebounceTextButton(
                 onClick = {
                     onSignUpButtonClick()
                 }

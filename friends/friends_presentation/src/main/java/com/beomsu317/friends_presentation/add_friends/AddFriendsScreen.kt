@@ -26,9 +26,9 @@ import coil.size.Size
 import com.beomsu317.core_ui.components.PriorityDialog
 import com.beomsu317.core.R
 import com.beomsu317.core.domain.model.Friend
+import com.beomsu317.core_ui.components.DebounceButton
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.beomsu317.core_ui.components.button.DebounceIconButton
 
 @Composable
 fun AddFriendsScreen(
@@ -44,7 +44,7 @@ fun AddFriendsScreen(
             onClose = {
                 showDialog = false
             },
-            onOkClick = { priority ->
+            onConfirmClick = { priority ->
                 viewModel.onEvent(
                     AddFriendsEvent.AddFriend(
                         friendId = friendId,
@@ -71,7 +71,7 @@ fun AddFriendsScreen(
                         modifier = Modifier.fillMaxHeight(),
                         contentAlignment = Center
                     ) {
-                        IconButton(
+                        DebounceIconButton(
                             onClick = {
                                 onNavigateBack()
                             },

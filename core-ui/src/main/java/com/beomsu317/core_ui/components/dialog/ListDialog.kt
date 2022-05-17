@@ -1,4 +1,4 @@
-package com.beomsu317.core_ui.components
+package com.beomsu317.core_ui.components.dialog
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background

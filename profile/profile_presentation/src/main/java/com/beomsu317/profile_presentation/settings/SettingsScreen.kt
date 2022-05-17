@@ -95,7 +95,7 @@ fun Notifications(
             Text(
                 text = "Notifications",
                 style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Normal
             )
         }
         Switch(
@@ -125,7 +125,7 @@ fun Version() {
             Text(
                 text = "Version",
                 style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Normal
             )
         }
         Text(
