@@ -29,7 +29,7 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.White),
     ) {
         PrivateChatTopAppBar(
             title = {
@@ -47,12 +47,12 @@ fun SettingsScreen(
             }
         )
         Spacer(modifier = Modifier
-            .height(20.dp)
             .background(Color.LightGray))
         Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 30.dp)
+                .padding(horizontal = 30.dp, vertical = 10.dp)
         ) {
             Notifications(
                 notificationState = state.settings.notifications,
@@ -62,12 +62,12 @@ fun SettingsScreen(
             )
         }
         Spacer(modifier = Modifier
-            .height(20.dp)
             .background(Color.LightGray))
         Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 30.dp)
+                .padding(horizontal = 30.dp, vertical = 10.dp),
         ) {
             Version()
         }
@@ -91,10 +91,10 @@ fun Notifications(
                 contentDescription = "notifications",
                 tint = MaterialTheme.colors.primary
             )
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = "Notifications",
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Normal
             )
         }
@@ -121,10 +121,10 @@ fun Version() {
                 contentDescription = "version",
                 tint = MaterialTheme.colors.primary
             )
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = "Version",
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Normal
             )
         }

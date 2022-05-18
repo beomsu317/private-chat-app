@@ -1,5 +1,9 @@
 package com.beomsu317.friends_presentation.friends_list
 
+import android.util.Log
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -7,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,10 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -46,6 +52,18 @@ fun FriendsListScreen(
 ) {
     val state = viewModel.state
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
+
+    var fabHeight by remember { mutableStateOf(0.dp) }
+    val fabHeightState by animateDpAsState(
+        targetValue = fabHeight,
+        spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    var searchText by remember { mutableStateOf("") }
+
     LaunchedEffect(key1 = oneTimeEventFlow) {
         oneTimeEventFlow.collect { oneTimeEvet ->
             when (oneTimeEvet) {
@@ -61,45 +79,53 @@ fun FriendsListScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         floatingActionButton = {
             DebounceFloatingActionButton(
                 onClick = {
                     onAddFriendButtonClick()
                 },
-                modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
+                modifier = Modifier
+                    .offset {
+                        IntOffset(x = 0, y = fabHeightState.roundToPx())
+                    }
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "floating_action_button")
             }
         }
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                PrivateChatTopAppBar(
-                    title = {
-                        Text(text = "Friends")
+            PrivateChatTopAppBar(
+                title = {
+                    Text(text = "Friends")
+                }
+            )
+            SearchSection(onSearch = {
+                searchText = it
+                viewModel.onEvent(FriendsListEvent.Search(searchText))
+            })
+            Spacer(modifier = Modifier.height(10.dp))
+            FriendsListSection(
+                friends = state.friends,
+                onDeleteFriend = { friend ->
+                    viewModel.onEvent(FriendsListEvent.DeleteFriend(friend = friend))
+                },
+                isLoading = state.isLoading,
+                onRefresh = {
+                    viewModel.onEvent(FriendsListEvent.RefreshFriends(refresh = true, searchText = searchText))
+                },
+                onNavigateFriendProfile = onNavigateFriendProfile,
+                onScrollStateChange = { scrollState ->
+                    if (scrollState) {
+                        fabHeight = 100.dp
+                    } else {
+                        fabHeight = 0.dp
                     }
-                )
-                SearchSection(onSearch = {
-                    viewModel.onEvent(FriendsListEvent.Search(it))
-                })
-                Spacer(modifier = Modifier.height(30.dp))
-                FriendsListSection(
-                    friends = state.friends,
-                    onDeleteFriend = { friend ->
-                        viewModel.onEvent(FriendsListEvent.DeleteFriend(friend = friend))
-                    },
-                    isLoading = state.isLoading,
-                    onRefresh = {
-                        viewModel.onEvent(FriendsListEvent.RefreshFriends(refresh = true))
-                    },
-                    onNavigateFriendProfile = onNavigateFriendProfile
-                )
-            }
+                }
+            )
         }
     }
 }
@@ -118,8 +144,31 @@ fun FriendsListSection(
     isLoading: Boolean,
     onRefresh: () -> Unit,
     onDeleteFriend: (Friend) -> Unit,
-    onNavigateFriendProfile: () -> Unit
+    onNavigateFriendProfile: () -> Unit,
+    onScrollStateChange: (Boolean) -> Unit
 ) {
+    val lazyListState = rememberLazyListState()
+
+    val isScrollEnd by remember {
+        derivedStateOf {
+            val layoutInfo = lazyListState.layoutInfo
+            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+            if (layoutInfo.totalItemsCount == 0) {
+                false
+            } else {
+                val firstVisibleItem = visibleItemsInfo.first()
+                val lastVisibleItem = visibleItemsInfo.last()
+
+                (firstVisibleItem.index != 0 &&
+                        firstVisibleItem.offset != 0 &&
+                        lastVisibleItem.index == layoutInfo.totalItemsCount - 1)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = isScrollEnd) {
+        onScrollStateChange(isScrollEnd)
+    }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing = isLoading),
@@ -128,6 +177,7 @@ fun FriendsListSection(
         }
     ) {
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
             items(friends.toList()) {
@@ -194,15 +244,11 @@ fun FriendItem(
                     .crossfade(true)
                     .build(),
                 contentDescription = friend.displayName,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colors.primary,
-                        shape = CircleShape
-                    )
                     .padding(2.dp)
+                    .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(20.dp))
             Column(
@@ -223,3 +269,4 @@ fun FriendItem(
         }
     }
 }
+

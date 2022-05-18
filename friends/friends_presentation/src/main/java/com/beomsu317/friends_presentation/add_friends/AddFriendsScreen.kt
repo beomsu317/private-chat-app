@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -152,15 +153,11 @@ fun FriendItem(
                         .crossfade(true)
                         .build(),
                     contentDescription = friend.displayName,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(CircleShape)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.primary,
-                            shape = CircleShape
-                        )
                         .padding(2.dp)
+                        .clip(CircleShape)
                 )
                 Column(
                     modifier = Modifier,

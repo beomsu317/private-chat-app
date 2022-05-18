@@ -45,18 +45,22 @@ class FriendsListViewModel @Inject constructor(
                 deleteFriend(friend = event.friend)
             }
             is FriendsListEvent.RefreshFriends -> {
-                getFriends(event.refresh)
+                getFriends(event.refresh, event.searchText)
             }
         }
     }
 
-    private fun getFriends(refresh: Boolean) {
+    private fun getFriends(refresh: Boolean, searchText: String = "") {
         viewModelScope.launch {
             val token = appDataStore.getToken()
             state = state.copy(isLoading = true)
             friendsUseCases.getMyFriendsUseCase(token, refresh).onEach {
                 state = state.copy(friends = it, isLoading = false)
             }.launchIn(viewModelScope)
+
+            if (searchText.isNotEmpty()) {
+                search(searchText)
+            }
         }
     }
 

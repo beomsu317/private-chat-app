@@ -10,6 +10,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -92,7 +93,7 @@ fun MyProfileScreen(
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .clip(CircleShape)
-                            .debounceClickable {
+                            .clickable {
                                 if (edit) {
                                     viewModel.onEvent(MyProfileEvent.UploadProfileImage(uri = uri))
                                 }
@@ -303,7 +304,7 @@ fun ProfileSection(
                     .size(130.dp)
                     .padding(4.dp)
                     .clip(CircleShape)
-                    .debounceClickable (interactionSource = interactionSource, indication = null) {
+                    .clickable (interactionSource = interactionSource, indication = null) {
                         if (edit) {
                             showDialog = true
                         }
