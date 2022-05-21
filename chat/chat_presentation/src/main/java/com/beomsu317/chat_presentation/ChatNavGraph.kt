@@ -5,11 +5,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.beomsu317.chat_presentation.chat_room_list.ChatRoomListScreen
 import com.beomsu317.core_ui.navigation.CHAT_GRAPH_ROUTE
-
-sealed class ChatScreen(val route: String) {
-    object ChatRoomListScreens: ChatScreen(route = "chat_room_list_screen")
-}
+import com.beomsu317.core_ui.navigation.ChatScreen
 
 fun NavGraphBuilder.chatNavGraph(
     navHostController: NavHostController,
@@ -20,7 +18,7 @@ fun NavGraphBuilder.chatNavGraph(
         route = CHAT_GRAPH_ROUTE
     ) {
         composable(ChatScreen.ChatRoomListScreens.route) {
-//            ChatRoomListScreen()
+            ChatRoomListScreen()
         }
     }
 }

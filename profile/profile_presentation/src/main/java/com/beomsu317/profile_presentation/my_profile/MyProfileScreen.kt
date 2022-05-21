@@ -1,9 +1,11 @@
 package com.beomsu317.profile_presentation.my_profile
 
 import android.Manifest
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -57,6 +59,8 @@ fun MyProfileScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onSignOut: () -> Unit,
     onNavigateSettings: () -> Unit,
+    onClickFriends: () -> Unit,
+    onClickRooms: () -> Unit,
     viewModel: MyProfileViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -122,7 +126,7 @@ fun MyProfileScreen(
             Spacer(modifier = Modifier.height(20.dp))
             Divider(modifier = Modifier.padding(horizontal = 40.dp))
             Spacer(modifier = Modifier.height(20.dp))
-            FriendsAndRoomsSection(user = state.user)
+            FriendsAndRoomsSection(user = state.user, onClickFriends = onClickFriends, onClickRooms = onClickRooms)
             Spacer(modifier = Modifier.height(20.dp))
             SettingsSection(
                 onSignOut = {
@@ -167,23 +171,11 @@ fun ProfileSection(
     }
 
     var cameraUri by remember {
-        val photoFile = File.createTempFile(
-            "IMG_",
-            ".jpg",
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        )
-        val uri = FileProvider.getUriForFile(
-            context,
-            context.applicationContext.packageName + ".provider",
-            photoFile
-        )
-        mutableStateOf(uri)
+        mutableStateOf(getCameraUri(context))
     }
 
     val imageLoader by remember {
-        mutableStateOf(
-            ImageLoader.Builder(context).build()
-        )
+        mutableStateOf(ImageLoader.Builder(context).build())
     }
 
     var bitmap: Bitmap? by remember {
@@ -251,6 +243,7 @@ fun ProfileSection(
     val cameraPermissionState = rememberPermissionState(
         permission = Manifest.permission.CAMERA,
         onPermissionResult = {
+            cameraUri = getCameraUri(context)
             cameraLauncher.launch(cameraUri)
         })
 
@@ -265,6 +258,7 @@ fun ProfileSection(
                         showDialog = false
                         when (cameraPermissionState.status) {
                             is PermissionStatus.Granted -> {
+                                cameraUri = getCameraUri(context)
                                 cameraLauncher.launch(cameraUri)
                             }
                             is PermissionStatus.Denied -> {
@@ -304,7 +298,7 @@ fun ProfileSection(
                     .size(130.dp)
                     .padding(4.dp)
                     .clip(CircleShape)
-                    .clickable (interactionSource = interactionSource, indication = null) {
+                    .clickable(interactionSource = interactionSource, indication = null) {
                         if (edit) {
                             showDialog = true
                         }
@@ -358,41 +352,54 @@ fun ProfileSection(
 
 @Composable
 fun FriendsAndRoomsSection(
-    user: User
+    user: User,
+    onClickFriends: () -> Unit,
+    onClickRooms: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CountItem(text = "Friends", count = user.friends.size)
-        Spacer(modifier = Modifier.width(100.dp))
-        CountItem(text = "Rooms", count = user.rooms.size)
+        CountItem(text = "Friends", count = user.friends.size, onClick = onClickFriends)
+        Spacer(modifier = Modifier.width(50.dp))
+        CountItem(text = "Rooms", count = user.rooms.size, onClick = onClickRooms)
     }
 }
 
 @Composable
 fun CountItem(
     text: String,
-    count: Int
+    count: Int,
+    onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .debounceClickable {
+                onClick()
+            }
     ) {
-        Text(
-            text = count.toString(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = Color.Gray,
-            style = MaterialTheme.typography.body2
-        )
+        Column(
+            modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = count.toString(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.body1,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                color = Color.Gray,
+                style = MaterialTheme.typography.body2
+            )
+        }
     }
 }
 
@@ -476,4 +483,18 @@ fun SettingItem(
                 .padding(horizontal = 20.dp)
         )
     }
+}
+
+fun getCameraUri(context: Context): Uri {
+    val photoFile = File.createTempFile(
+        "IMG_",
+        ".jpg",
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    )
+    val uri = FileProvider.getUriForFile(
+        context,
+        context.applicationContext.packageName + ".provider",
+        photoFile
+    )
+    return uri
 }

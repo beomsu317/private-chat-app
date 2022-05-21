@@ -28,7 +28,7 @@ fun NavGraphBuilder.profileNavGraph(
                         navController.popBackStack(it.id, true)
                     }
                     navController.navigate(StartupScreen.SignInScreen.route) {
-                        popUpTo(PROFILE_GRAPH_ROUTE) {
+                        popUpTo(ProfileScreen.MyProfileScreen.route) {
                             inclusive = true
                         }
                         launchSingleTop = true
@@ -36,6 +36,22 @@ fun NavGraphBuilder.profileNavGraph(
                 },
                 onNavigateSettings = {
                     navController.navigate(ProfileScreen.SettingsScreen.route)
+                },
+                onClickFriends = {
+                    navController.navigate(FriendsScreen.FriendsListScreen.route) {
+                        popUpTo(PROFILE_GRAPH_ROUTE) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                onClickRooms = {
+                    navController.navigate(ChatScreen.ChatRoomListScreens.route) {
+                        popUpTo(PROFILE_GRAPH_ROUTE) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
