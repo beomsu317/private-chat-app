@@ -153,10 +153,10 @@ fun ProfileSection(
     val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
     var showDialog by remember { mutableStateOf(false) }
-    val arc = remember { Animatable(initialValue = -90f) }
+    val arcState = remember { Animatable(initialValue = -90f) }
 
     LaunchedEffect(key1 = true) {
-        arc.animateTo(
+        arcState.animateTo(
             targetValue = 360f,
             animationSpec = tween(
                 durationMillis = 1500,
@@ -316,7 +316,7 @@ fun ProfileSection(
                 drawArc(
                     color = Color(0xff4b5ad1),
                     startAngle = -90f,
-                    sweepAngle = arc.value,
+                    sweepAngle = arcState.value,
                     useCenter = false,
                     style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
                 )

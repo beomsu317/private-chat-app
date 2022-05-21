@@ -1,13 +1,7 @@
 package com.beomsu317.friends_presentation.friends_list
 
-import android.util.Log
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -32,14 +28,16 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Size
 import com.beomsu317.core.R
-import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.common.OneTimeEvent
-import com.beomsu317.core_ui.common.debounceClickable
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
 import com.beomsu317.core_ui.components.SearchTextField
 import com.beomsu317.core_ui.components.button.DebounceFloatingActionButton
+import com.beomsu317.friends_domain.model.FriendWithPriority
+import com.beomsu317.friends_presentation.friend_profile.FriendProfileDialog
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -47,11 +45,11 @@ import me.saket.swipe.SwipeableActionsBox
 fun FriendsListScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onAddFriendButtonClick: () -> Unit,
-    onNavigateFriendProfile: () -> Unit,
     viewModel: FriendsListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
+    val scope = rememberCoroutineScope()
 
     var fabHeight by remember { mutableStateOf(0.dp) }
     val fabHeightState by animateDpAsState(
@@ -62,7 +60,8 @@ fun FriendsListScreen(
         )
     )
 
-    var searchText by remember { mutableStateOf("") }
+    var showProfileDialog by remember { mutableStateOf(false) }
+    var currentFriend by remember { mutableStateOf(FriendWithPriority()) }
 
     LaunchedEffect(key1 = oneTimeEventFlow) {
         oneTimeEventFlow.collect { oneTimeEvet ->
@@ -95,6 +94,18 @@ fun FriendsListScreen(
             }
         }
     ) { paddingValues ->
+        if (showProfileDialog) {
+            FriendProfileDialog(
+                friendWithPriority = currentFriend,
+                onClose = { priority ->
+                    if (currentFriend.priority != priority) {
+                        viewModel.onEvent(FriendsListEvent.UpdateUser(currentFriend.copy(priority = priority)))
+                    }
+                    showProfileDialog = false
+                }
+            )
+        }
+
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -104,26 +115,32 @@ fun FriendsListScreen(
                 }
             )
             SearchSection(onSearch = {
-                searchText = it
-                viewModel.onEvent(FriendsListEvent.Search(searchText))
+                viewModel.searchText = it
+                scope.launch {
+                    delay(500L)
+                    viewModel.onEvent(FriendsListEvent.Search)
+                }
             })
             Spacer(modifier = Modifier.height(10.dp))
             FriendsListSection(
                 friends = state.friends,
                 onDeleteFriend = { friend ->
-                    viewModel.onEvent(FriendsListEvent.DeleteFriend(friend = friend))
+                    viewModel.onEvent(FriendsListEvent.DeleteFriend(friendId = friend.id))
                 },
                 isLoading = state.isLoading,
                 onRefresh = {
-                    viewModel.onEvent(FriendsListEvent.RefreshFriends(refresh = true, searchText = searchText))
+                    viewModel.onEvent(FriendsListEvent.RefreshFriends(refresh = true))
                 },
-                onNavigateFriendProfile = onNavigateFriendProfile,
                 onScrollStateChange = { scrollState ->
                     if (scrollState) {
                         fabHeight = 100.dp
                     } else {
                         fabHeight = 0.dp
                     }
+                },
+                onShowProfileDialog = {
+                    currentFriend = it
+                    showProfileDialog = true
                 }
             )
         }
@@ -140,12 +157,12 @@ fun SearchSection(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FriendsListSection(
-    friends: Set<Friend>,
+    friends: List<FriendWithPriority>,
     isLoading: Boolean,
     onRefresh: () -> Unit,
-    onDeleteFriend: (Friend) -> Unit,
-    onNavigateFriendProfile: () -> Unit,
-    onScrollStateChange: (Boolean) -> Unit
+    onDeleteFriend: (FriendWithPriority) -> Unit,
+    onScrollStateChange: (Boolean) -> Unit,
+    onShowProfileDialog: (FriendWithPriority) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -190,7 +207,7 @@ fun FriendsListSection(
                     FriendItem(
                         friend = it,
                         onDeleteFriend = onDeleteFriend,
-                        onNavigateFriendProfile = onNavigateFriendProfile
+                        onShowProfileDialog = onShowProfileDialog
                     )
                 }
             }
@@ -201,9 +218,9 @@ fun FriendsListSection(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FriendItem(
-    friend: Friend,
-    onDeleteFriend: (Friend) -> Unit,
-    onNavigateFriendProfile: () -> Unit
+    friend: FriendWithPriority,
+    onDeleteFriend: (FriendWithPriority) -> Unit,
+    onShowProfileDialog: (FriendWithPriority) -> Unit
 ) {
     SwipeableActionsBox(
         endActions = listOf(
@@ -223,50 +240,94 @@ fun FriendItem(
         ),
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .fillMaxSize()
                 .background(MaterialTheme.colors.background)
-                .debounceClickable {
-                    onNavigateFriendProfile()
+                .clickable {
+                    onShowProfileDialog(friend)
                 }
-                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 25.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(
-                        if (!friend.photoUrl.isEmpty()) {
-                            friend.photoUrl
-                        } else {
-                            R.drawable.user_placeholder
-                        }
-                    )
-                    .size(Size.ORIGINAL)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = friend.displayName,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(60.dp)
-                    .padding(2.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(20.dp))
-            Column(
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = friend.displayName,
-                    style = MaterialTheme.typography.body1,
-                    fontWeight = FontWeight.SemiBold
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(
+                            if (!friend.photoUrl.isEmpty()) {
+                                friend.photoUrl
+                            } else {
+                                R.drawable.user_placeholder
+                            }
+                        )
+                        .size(Size.ORIGINAL)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = friend.displayName,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(2.dp)
+                        .clip(CircleShape)
                 )
-                Text(
-                    text = friend.email,
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.Gray
-                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Column {
+                    Text(
+                        text = friend.displayName,
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = friend.email,
+                        style = MaterialTheme.typography.body2,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Gray
+                    )
+                }
             }
+            PriorityIcon(
+                priority = friend.priority
+            )
         }
     }
 }
 
+@Composable
+fun PriorityIcon(
+    priority: Int
+) {
+
+    val arcState = remember { Animatable(initialValue = 90f) }
+
+    LaunchedEffect(key1 = priority) {
+        arcState.animateTo(
+            targetValue = 360f/5f * (priority + 1).toFloat(),
+            animationSpec = tween(
+                durationMillis = 1000,
+                easing = LinearOutSlowInEasing
+            )
+        )
+    }
+    Box(
+        modifier = Modifier
+            .size(36.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawArc(
+                color = Color(0xff4b5ad1),
+                startAngle = -90f,
+                sweepAngle = arcState.value,
+                useCenter = false,
+                style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
+            )
+        }
+
+        Text(
+            text = (priority + 1).toString(),
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}

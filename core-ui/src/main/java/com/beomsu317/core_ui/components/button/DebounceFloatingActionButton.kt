@@ -12,10 +12,10 @@ fun DebounceFloatingActionButton(
     content: @Composable () -> Unit
 ) {
     var lastClickTimeMs by remember { mutableStateOf(0L) }
-    var now by remember { mutableStateOf(System.currentTimeMillis()) }
 
     FloatingActionButton(
         onClick = {
+            val now = System.currentTimeMillis()
             if (now - lastClickTimeMs < debounceInterval) {
                 return@FloatingActionButton
             }

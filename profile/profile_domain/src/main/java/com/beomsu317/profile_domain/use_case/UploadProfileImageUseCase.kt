@@ -11,10 +11,10 @@ import javax.inject.Inject
 class UploadProfileImageUseCase @Inject constructor(
     private val repository: ProfileRepository
 ) {
-    suspend operator fun invoke(token: String, uri: Uri): Flow<Resource<String>> = flow {
+    suspend operator fun invoke(uri: Uri): Flow<Resource<String>> = flow {
         try {
             emit(Resource.Loading<String>())
-            val result = repository.uploadProfileImage(token = token, uri = uri)
+            val result = repository.uploadProfileImage(uri = uri)
             emit(Resource.Success<String>(data = result))
         } catch (e: Exception) {
             emit(Resource.Error<String>(message = e.localizedMessage))

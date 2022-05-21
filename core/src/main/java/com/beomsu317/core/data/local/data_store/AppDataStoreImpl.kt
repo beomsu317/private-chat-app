@@ -51,12 +51,6 @@ class AppDataStoreImpl @Inject constructor(
         }
     }
 
-    override suspend fun getToken(): String {
-        return withContext(dispatcher) {
-            tokenFlow.first()
-        }
-    }
-
     override suspend fun updateUser(user: User) {
         withContext(dispatcher) {
             context.userDataStore.updateData {
@@ -65,23 +59,11 @@ class AppDataStoreImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUser(): User {
-        return withContext(dispatcher) {
-            userFlow.first()
-        }
-    }
-
     override suspend fun updateSettings(settings: Settings) {
         withContext(dispatcher) {
             context.settingsDataStore.updateData {
                 settings
             }
-        }
-    }
-
-    override suspend fun getSettings(): Settings {
-        return withContext(dispatcher) {
-            settingsFlow.first()
         }
     }
 }

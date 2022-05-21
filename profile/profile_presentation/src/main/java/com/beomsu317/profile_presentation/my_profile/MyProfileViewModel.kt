@@ -10,10 +10,12 @@ import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
 import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.core.domain.model.User
+import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.profile_domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -23,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyProfileViewModel @Inject constructor(
     private val profileUseCases: ProfileUseCases,
-    private val appDataStore: AppDataStore
+    private val coreUseCases: CoreUseCases
 ): ViewModel() {
 
     var state by mutableStateOf(MyProfileState())
@@ -49,7 +51,7 @@ class MyProfileViewModel @Inject constructor(
 
     private fun getProfile() {
         viewModelScope.launch {
-            appDataStore.userFlow.onEach {
+            coreUseCases.getUserFlowUseCase().onEach {
                 state = state.copy(user = it)
             }.launchIn(viewModelScope)
         }
@@ -64,8 +66,7 @@ class MyProfileViewModel @Inject constructor(
     private fun uploadProfileImage(uri: Uri?) {
         uri?.let {
             viewModelScope.launch {
-                val token = appDataStore.getToken()
-                profileUseCases.uploadProfileImageUseCase(token = token, uri = uri).onEach { resource ->
+                profileUseCases.uploadProfileImageUseCase(uri = uri).onEach { resource ->
                     when (resource) {
                         is Resource.Success -> {
                             state = state.copy(user = state.user.copy(photoUrl = resource.data ?: ""), isLoading = false)

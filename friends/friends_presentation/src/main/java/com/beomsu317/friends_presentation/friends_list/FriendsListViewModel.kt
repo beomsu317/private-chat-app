@@ -1,5 +1,6 @@
 package com.beomsu317.friends_presentation.friends_list
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,12 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
 import com.beomsu317.core.domain.data_store.AppDataStore
-import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.common.OneTimeEvent
+import com.beomsu317.friends_domain.model.FriendWithPriority
 import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -22,7 +25,6 @@ import javax.inject.Inject
 @HiltViewModel
 class FriendsListViewModel @Inject constructor(
     private val friendsUseCases: FriendsUseCases,
-    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
     var state by mutableStateOf(FriendsListState())
@@ -30,7 +32,9 @@ class FriendsListViewModel @Inject constructor(
     private val _oneTimeEvent = Channel<OneTimeEvent>()
     val oneTimeEventFlow = _oneTimeEvent.receiveAsFlow()
 
-    var searchJob: Job? = null
+    var searchText by mutableStateOf("")
+
+    var getFriendsJob: Job? = null
 
     init {
         getFriends(true)
@@ -39,40 +43,53 @@ class FriendsListViewModel @Inject constructor(
     fun onEvent(event: FriendsListEvent) {
         when (event) {
             is FriendsListEvent.Search -> {
-                search(searchText = event.searchText)
+                search()
             }
             is FriendsListEvent.DeleteFriend -> {
-                deleteFriend(friend = event.friend)
+                deleteFriend(friendId = event.friendId)
             }
             is FriendsListEvent.RefreshFriends -> {
-                getFriends(event.refresh, event.searchText)
+                getFriends(event.refresh)
+            }
+            is FriendsListEvent.UpdateUser -> {
+                updateUser(event.friendWithPriority)
             }
         }
     }
 
-    private fun getFriends(refresh: Boolean, searchText: String = "") {
+    private fun getFriends(refresh: Boolean) {
         viewModelScope.launch {
-            val token = appDataStore.getToken()
             state = state.copy(isLoading = true)
-            friendsUseCases.getMyFriendsUseCase(token, refresh).onEach {
-                state = state.copy(friends = it, isLoading = false)
+            getFriendsJob?.cancel()
+            getFriendsJob = friendsUseCases.getMyFriendsUseCase(refresh).onEach {
+                val user = friendsUseCases.getUserFlowUseCase().first()
+                val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, it)
+                if (searchText.isNullOrEmpty()) {
+                    state = state.copy(friends = sortedFriendsList, isLoading = false)
+                } else {
+                    search()
+                }
             }.launchIn(viewModelScope)
-
-            if (searchText.isNotEmpty()) {
-                search(searchText)
-            }
         }
     }
 
-    private fun search(searchText: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            friendsUseCases.searchFriendsUseCase(searchText).onEach { resource ->
+    private fun search() {
+        viewModelScope.launch {
+            val friends = friendsUseCases.searchFriendUseCase(searchText).toSet()
+            val user = friendsUseCases.getUserFlowUseCase().first()
+            val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, friends)
+            state = state.copy(friends = sortedFriendsList, isLoading = false)
+        }
+    }
+
+    private fun deleteFriend(friendId: String) {
+        viewModelScope.launch {
+            friendsUseCases.deleteFriendUseCase(friendId = friendId).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         state = state.copy(
-                            isLoading = false,
-                            friends = resource.data?.toSet() ?: emptySet()
+                            friends = state.friends.filter { it.id != friendId },
+                            isLoading = false
                         )
                     }
                     is Resource.Error -> {
@@ -91,27 +108,18 @@ class FriendsListViewModel @Inject constructor(
         }
     }
 
-    private fun deleteFriend(friend: Friend) {
+    private fun updateUser(friendWithPriority: FriendWithPriority) {
         viewModelScope.launch {
-            val token = appDataStore.getToken()
-            friendsUseCases.deleteFriendUseCase(token = token, friend = friend).onEach { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        state = state.copy(friends = state.friends - friend, isLoading = false)
-                    }
-                    is Resource.Error -> {
-                        _oneTimeEvent.send(
-                            OneTimeEvent.ShowSnackbar(
-                                resource.message ?: "An unknown error occured"
-                            )
-                        )
-                        state = state.copy(isLoading = false)
-                    }
-                    is Resource.Loading -> {
-                        state = state.copy(isLoading = true)
+            friendsUseCases.updateUserUseCase(friendWithPriority)
+            state = state.copy(
+                friends = state.friends.map {
+                    if (friendWithPriority.id == it.id) {
+                        friendWithPriority
+                    } else {
+                        it
                     }
                 }
-            }.launchIn(viewModelScope)
+            )
         }
     }
 }

@@ -19,9 +19,9 @@ fun DebounceButton(
     content: @Composable RowScope.() -> Unit
 ) {
     var lastClickTimeMs by remember { mutableStateOf(0L) }
-    var now by remember { mutableStateOf(System.currentTimeMillis()) }
     Button(
         onClick = {
+            val now = System.currentTimeMillis()
             if (now - lastClickTimeMs < debounceInterval) {
                 return@Button
             }

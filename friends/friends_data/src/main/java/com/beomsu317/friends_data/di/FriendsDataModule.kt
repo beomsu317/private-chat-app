@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -36,7 +37,7 @@ object FriendsDataModule {
     @Provides
     @Singleton
     fun provideFriendsRepository(api: PrivateChatApi, database: PrivateChatDatabase, appDataStore: AppDataStore): FriendsRepository {
-        return FriendsRepositoryImpl(api, database, appDataStore)
+        return FriendsRepositoryImpl(api, database, appDataStore, Dispatchers.IO)
     }
 
     @Provides

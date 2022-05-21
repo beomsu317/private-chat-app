@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Friend(
-    val id: String,
-    val email: String,
-    val photoUrl: String,
-    val displayName: String
+    val id: String = "",
+    val email: String = "",
+    val photoUrl: String = "",
+    val displayName: String = ""
 )

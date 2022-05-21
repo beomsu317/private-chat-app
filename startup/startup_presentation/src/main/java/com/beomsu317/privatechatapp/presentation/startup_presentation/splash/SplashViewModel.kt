@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class SplashViewModel @Inject constructor(
 
     private fun isSignedIn() {
         viewModelScope.launch {
-            val tokenDeffered = async { appDataStore.getToken() }
+            val tokenDeffered = async { appDataStore.tokenFlow.first() }
             val delayDeffered = async { delay(1000L) }
 
             delayDeffered.await()

@@ -1,8 +1,8 @@
 package com.beomsu317.friends_presentation.friends_list
 
-import com.beomsu317.core.domain.model.Friend
+import com.beomsu317.friends_domain.model.FriendWithPriority
 
 data class FriendsListState(
     val isLoading: Boolean = false,
-    val friends: Set<Friend> = emptySet()
+    val friends: List<FriendWithPriority> = emptyList(),
 )

@@ -2,14 +2,12 @@ package com.beomsu317.friends_domain.use_case
 
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.friends_domain.repository.FriendsRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetMyFriendsUseCase @Inject constructor(
+class SearchFriendUseCase @Inject constructor(
     private val repository: FriendsRepository
 ) {
-    suspend operator fun invoke(refresh: Boolean): Flow<Set<Friend>> {
-        return repository.getMyFriends(refresh = refresh)
+    suspend operator fun invoke(searchText: String): List<Friend> {
+        return repository.searchFriend(searchText)
     }
-
 }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
+import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.core.domain.use_case.ValidateEmailUseCase
 import com.beomsu317.core.domain.use_case.ValidatePasswordUseCase
 import com.beomsu317.core_ui.common.OneTimeEvent
@@ -21,8 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val startupUseCases: StartupUseCases,
-    private val validateEmailUseCase: ValidateEmailUseCase,
-    private val validatePasswordUseCase: ValidatePasswordUseCase,
+    private val coreUseCases: CoreUseCases
 ) : ViewModel() {
 
     var state by mutableStateOf(SignInState())
@@ -41,12 +41,12 @@ class SignInViewModel @Inject constructor(
 
     private fun signIn(email: String, password: String) {
         viewModelScope.launch {
-            if (!validateEmailUseCase(email)) {
+            if (!coreUseCases.validateEmailUseCase(email)) {
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Email is not valid"))
                 return@launch
             }
 
-            if (!validatePasswordUseCase(password)) {
+            if (!coreUseCases.validatePasswordUseCase(password)) {
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Password is not valid"))
                 return@launch
             }

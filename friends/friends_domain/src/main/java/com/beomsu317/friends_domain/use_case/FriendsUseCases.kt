@@ -5,5 +5,8 @@ data class FriendsUseCases(
     val deleteFriendUseCase: DeleteFriendUseCase,
     val getAllFriendsUseCase: GetAllFriendsUseCase,
     val getMyFriendsUseCase: GetMyFriendsUseCase,
-    val searchFriendsUseCase: SearchFriendsUseCase
+    val sortByPriorityUseCase: SortByPriorityUseCase,
+    val updateUserUseCase: UpdateUserUseCase,
+    val getUserFlowUseCase: GetUserFlowUseCase,
+    val searchFriendUseCase: SearchFriendUseCase
 )

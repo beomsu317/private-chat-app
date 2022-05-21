@@ -16,12 +16,18 @@ interface FriendsDao {
     @Delete
     suspend fun deleteFriend(friendEntity: FriendEntity)
 
+    @Query("DELETE FROM friendentity WHERE id = :friendId")
+    suspend fun deleteFriendById(friendId: String)
+
     @Query("DELETE FROM friendentity")
     suspend fun deleteAllFriend()
 
     @Query("SELECT * FROM friendentity")
     fun getFriends(): Flow<List<FriendEntity>>
 
+    @Query("SELECT * FROM friendentity WHERE id = :id")
+    suspend fun getFriend(id: String): FriendEntity
+
     @Query("SELECT * FROM friendentity WHERE displayName LIKE '%' || :searchText || '%'")
-    suspend fun searchFriends(searchText: String): List<FriendEntity>
+    fun searchFriends(searchText: String): List<FriendEntity>
 }

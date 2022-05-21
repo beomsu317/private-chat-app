@@ -11,10 +11,10 @@ import javax.inject.Inject
 class AddFriendUseCase @Inject constructor(
     private val repository: FriendsRepository
 ) {
-    suspend operator fun invoke(token: String, userFriend: UserFriend): Flow<Resource<Unit>> = flow {
+    suspend operator fun invoke(userFriend: UserFriend): Flow<Resource<Unit>> = flow {
         try {
             emit(Resource.Loading<Unit>())
-            repository.addFriend(token = token, userFriend = userFriend)
+            repository.addFriend(userFriend = userFriend)
             emit(Resource.Success<Unit>(data = Unit))
         } catch (e: Exception) {
             emit(Resource.Error<Unit>(e.localizedMessage))

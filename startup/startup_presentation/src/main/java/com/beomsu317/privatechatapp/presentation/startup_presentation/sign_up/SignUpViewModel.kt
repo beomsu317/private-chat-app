@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
+import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.core.domain.use_case.ValidateEmailUseCase
 import com.beomsu317.core.domain.use_case.ValidatePasswordUseCase
 import com.beomsu317.core_ui.common.OneTimeEvent
@@ -21,8 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val startupUseCases: StartupUseCases,
-    private val validateEmailUseCase: ValidateEmailUseCase,
-    private val validatePasswordUseCase: ValidatePasswordUseCase
+    private val coreUseCases: CoreUseCases
 ) : ViewModel() {
 
     var state by mutableStateOf(SignUpState())
@@ -55,11 +55,11 @@ class SignUpViewModel @Inject constructor(
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Username is empty"))
                 return@launch
             }
-            if (!validateEmailUseCase(email)) {
+            if (!coreUseCases.validateEmailUseCase(email)) {
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Email is not valid"))
                 return@launch
             }
-            if (!validatePasswordUseCase(password) || !validatePasswordUseCase(confirmPassword)) {
+            if (!coreUseCases.validatePasswordUseCase(password) || !coreUseCases.validatePasswordUseCase(confirmPassword)) {
                 _oneTimeEvent.send(OneTimeEvent.ShowSnackbar("Password is not valid"))
                 return@launch
             }

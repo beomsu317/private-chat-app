@@ -11,5 +11,5 @@ interface ProfileRepository {
 
     suspend fun signOut()
 
-    suspend fun uploadProfileImage(token: String, uri: Uri): String
+    suspend fun uploadProfileImage(uri: Uri): String
 }

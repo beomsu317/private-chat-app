@@ -12,9 +12,9 @@ fun DebounceIconButton(
     content: @Composable () -> Unit
 ) {
     var lastClickTimeMs by remember { mutableStateOf(0L) }
-    var now by remember { mutableStateOf(System.currentTimeMillis()) }
     IconButton(
         onClick = {
+            val now = System.currentTimeMillis()
             if (now - lastClickTimeMs < debounceInterval) {
                 return@IconButton
             }

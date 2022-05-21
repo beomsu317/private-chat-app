@@ -11,10 +11,10 @@ class DeleteFriendUseCase(
     private val repository: FriendsRepository
 ) {
 
-    suspend operator fun invoke(token :String, friend: Friend): Flow<Resource<Unit>> = flow {
+    suspend operator fun invoke(friendId: String): Flow<Resource<Unit>> = flow {
         try {
             emit(Resource.Loading<Unit>())
-            repository.deleteFriend(token = token, friend = friend)
+            repository.deleteFriendById(friendId = friendId)
             emit(Resource.Success<Unit>(data = Unit))
         } catch (e: Exception) {
             emit(Resource.Error<Unit>(e.localizedMessage))

@@ -6,13 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 interface FriendsRepository {
 
-    suspend fun getMyFriends(token: String, refresh: Boolean): Flow<Set<Friend>>
+    suspend fun getMyFriends(refresh: Boolean): Flow<Set<Friend>>
 
-    suspend fun getAllFriends(token: String): Set<Friend>
+    suspend fun getAllFriends(): Set<Friend>
 
-    suspend fun addFriend(token: String, userFriend: UserFriend)
+    suspend fun addFriend(userFriend: UserFriend)
 
-    suspend fun deleteFriend(token: String, friend: Friend)
+    suspend fun deleteFriend(friend: Friend)
 
-    suspend fun searchFriends(searchText: String): List<Friend>
+    suspend fun deleteFriendById(friendId: String)
+
+    suspend fun getFriend(id: String): Friend
+
+    suspend fun searchFriend(searchText: String): List<Friend>
 }

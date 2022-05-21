@@ -12,6 +12,7 @@ import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -47,8 +48,7 @@ class AddFriendsViewModel @Inject constructor(
 
     private fun getAllFriends() {
         viewModelScope.launch {
-            val token = appDataStore.getToken()
-            friendsUseCases.getAllFriendsUseCase(token = token).onEach { resource ->
+            friendsUseCases.getAllFriendsUseCase().onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         state = state.copy(friends = resource.data ?: emptySet(), isLoading = false)
@@ -71,8 +71,8 @@ class AddFriendsViewModel @Inject constructor(
 
     private fun addFriend(friendId: String, priority: Int) {
         viewModelScope.launch {
-            val token = appDataStore.getToken()
-            friendsUseCases.addFriendUseCase(token = token, userFriend = UserFriend(friendId, priority)).onEach { resource ->
+            val token = appDataStore.tokenFlow.first()
+            friendsUseCases.addFriendUseCase(userFriend = UserFriend(friendId, priority)).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val friends = state.friends.filter {

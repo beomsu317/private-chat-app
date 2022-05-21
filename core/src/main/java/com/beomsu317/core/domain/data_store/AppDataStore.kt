@@ -20,11 +20,8 @@ interface AppDataStore {
     val settingsFlow: Flow<Settings>
 
     suspend fun updateToken(token: String)
-    suspend fun getToken(): String
 
     suspend fun updateUser(user: User)
-    suspend fun getUser(): User
 
     suspend fun updateSettings(settings: Settings)
-    suspend fun getSettings(): Settings
 }

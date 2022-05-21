@@ -1,14 +1,11 @@
 package com.beomsu317.friends_presentation
 
 import androidx.compose.material.SnackbarDuration
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
+import androidx.navigation.*
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.beomsu317.core_ui.navigation.FRIENDS_GRAPH_ROUTE
 import com.beomsu317.core_ui.navigation.FriendsScreen
 import com.beomsu317.friends_presentation.add_friends.AddFriendsScreen
-import com.beomsu317.friends_presentation.friend_profile.FriendProfileScreen
 import com.beomsu317.friends_presentation.friends_list.FriendsListScreen
 
 fun NavGraphBuilder.friendsNavGraph(
@@ -24,9 +21,6 @@ fun NavGraphBuilder.friendsNavGraph(
                 showSnackbar = showSnackbar,
                 onAddFriendButtonClick = {
                     navController.navigate(FriendsScreen.AddFriendScreen.route)
-                },
-                onNavigateFriendProfile = {
-                    navController.navigate(FriendsScreen.FriendProfileScreen.route)
                 }
             )
         }
@@ -36,9 +30,6 @@ fun NavGraphBuilder.friendsNavGraph(
                     navController.popBackStack()
                 }
             )
-        }
-        composable(FriendsScreen.FriendProfileScreen.route) {
-            FriendProfileScreen()
         }
     }
 }
