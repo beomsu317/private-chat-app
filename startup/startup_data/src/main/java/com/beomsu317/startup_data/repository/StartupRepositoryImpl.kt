@@ -6,11 +6,14 @@ import com.beomsu317.startup_data.remote.PrivateChatApi
 import com.beomsu317.startup_data.remote.request.UserSignInRequest
 import com.beomsu317.startup_data.remote.request.UserRegisterRequest
 import com.beomsu317.startup_domain.repository.StartupRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 
 class StartupRepositoryImpl(
     private val api: PrivateChatApi,
-    private val appDataStore: AppDataStore
+    private val appDataStore: AppDataStore,
+    private val dispatcher: CoroutineDispatcher
 ) : StartupRepository {
 
     override suspend fun registerUser(
@@ -19,33 +22,37 @@ class StartupRepositoryImpl(
         password: String,
         confirmPassword: String
     ) {
-        val response = api.registerUser(
-            UserRegisterRequest(
-                displayName = displayName,
-                email = email,
-                password = password,
-                confirmPassword = confirmPassword
+        withContext(dispatcher) {
+            val response = api.registerUser(
+                UserRegisterRequest(
+                    displayName = displayName,
+                    email = email,
+                    password = password,
+                    confirmPassword = confirmPassword
+                )
             )
-        )
-        if (!response.isSuccessful) {
-            throw Exception(response.message())
+            if (!response.isSuccessful) {
+                throw Exception(response.message())
+            }
         }
     }
 
     override suspend fun loginUser(email: String, password: String) {
-        val response = api.signInUser(
-            UserSignInRequest(
-                email = email,
-                password = password
+        withContext(dispatcher) {
+            val response = api.signInUser(
+                UserSignInRequest(
+                    email = email,
+                    password = password
+                )
             )
-        )
-        if (!response.isSuccessful) {
-            throw Exception(response.message())
+            if (!response.isSuccessful) {
+                throw Exception(response.message())
+            }
+            val result = response.body()?.result ?: throw Exception("Sign in user error occured")
+            val token = result.token
+            val userDto = result.user
+            appDataStore.updateToken(token)
+            appDataStore.updateUser(userDto.toUser())
         }
-        val result = response.body()?.result ?: throw Exception("Sign in user error occured")
-        val token = result.token
-        val userDto = result.user
-        appDataStore.updateToken(token)
-        appDataStore.updateUser(userDto.toUser())
     }
 }

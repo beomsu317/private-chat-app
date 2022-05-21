@@ -111,15 +111,7 @@ class FriendsListViewModel @Inject constructor(
     private fun updateUser(friendWithPriority: FriendWithPriority) {
         viewModelScope.launch {
             friendsUseCases.updateUserUseCase(friendWithPriority)
-            state = state.copy(
-                friends = state.friends.map {
-                    if (friendWithPriority.id == it.id) {
-                        friendWithPriority
-                    } else {
-                        it
-                    }
-                }
-            )
+            search()
         }
     }
 }

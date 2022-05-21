@@ -10,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -37,6 +38,6 @@ object StartupDataModule {
         api: PrivateChatApi,
         appDataStore: AppDataStore
     ): StartupRepository {
-        return StartupRepositoryImpl(api, appDataStore)
+        return StartupRepositoryImpl(api, appDataStore, Dispatchers.IO)
     }
 }

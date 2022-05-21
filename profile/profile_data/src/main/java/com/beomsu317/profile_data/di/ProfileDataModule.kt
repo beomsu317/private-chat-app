@@ -12,6 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -36,6 +37,6 @@ object ProfileDataModule {
     @Provides
     @Singleton
     fun provideProfileRepository(api: PrivateChatApi, @ApplicationContext context: Context, appDataStore: AppDataStore): ProfileRepository {
-        return ProfileRepositoryImpl(api, context, appDataStore)
+        return ProfileRepositoryImpl(api, context, appDataStore, Dispatchers.IO)
     }
 }
