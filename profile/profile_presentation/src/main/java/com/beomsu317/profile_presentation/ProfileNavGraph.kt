@@ -46,7 +46,7 @@ fun NavGraphBuilder.profileNavGraph(
                     }
                 },
                 onClickRooms = {
-                    navController.navigate(ChatScreen.ChatRoomListScreens.route) {
+                    navController.navigate(ChatScreen.ChatRoomListScreen.route) {
                         popUpTo(PROFILE_GRAPH_ROUTE) {
                             inclusive = true
                         }

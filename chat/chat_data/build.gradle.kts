@@ -4,4 +4,11 @@ apply {
 
 dependencies {
     "implementation"(project(Modules.core))
+    "implementation"(project(Modules.chatDomain))
+
+    "implementation"(Network.retrofit)
+    "implementation"(Network.okhttp)
+
+    "implementation"(Serialization.kotlinxSerializationJson)
+    "implementation"(Serialization.kotlinxSerializationConverter)
 }

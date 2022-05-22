@@ -1,6 +1,5 @@
 package com.beomsu317.friends_domain.use_case
 
-import android.util.Log
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core.domain.model.UserFriend
 import com.beomsu317.friends_domain.model.FriendWithPriority

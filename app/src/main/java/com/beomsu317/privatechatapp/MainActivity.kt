@@ -1,6 +1,7 @@
 package com.beomsu317.privatechatapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -61,9 +62,17 @@ fun BottomNavigationBar(navController: NavHostController) {
     var bottomBarState by rememberSaveable {
         mutableStateOf(false)
     }
-    when (navBackStackEntry?.destination?.parent?.route) {
-        FRIENDS_GRAPH_ROUTE, CHAT_GRAPH_ROUTE, PROFILE_GRAPH_ROUTE -> bottomBarState = true
-        else -> bottomBarState = false
+    when (navBackStackEntry?.destination?.route?.split('/')?.get(0)) {
+        StartupScreen.SplashScreen.route,
+        StartupScreen.IntroScreen.route,
+        StartupScreen.SignInScreen.route,
+        StartupScreen.SignUpScreen.route -> {
+            bottomBarState = false
+        }
+        ChatScreen.ChatRoomScreen.route -> {
+            bottomBarState = false
+        }
+        else -> bottomBarState = true
     }
 
     AnimatedVisibility(

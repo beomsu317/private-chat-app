@@ -13,4 +13,5 @@ dependencies {
 
     "implementation"(Accompanist.swipeRefresh)
 
+    "implementation"(Serialization.kotlinxSerializationJson)
 }
