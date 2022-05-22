@@ -8,7 +8,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -20,6 +19,7 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.beomsu317.core.R
+import com.beomsu317.core_ui.components.DebounceButton
 import com.beomsu317.friends_domain.model.FriendWithPriority
 import kotlin.math.roundToInt
 
@@ -27,6 +27,7 @@ import kotlin.math.roundToInt
 fun FriendProfileDialog(
     friendWithPriority: FriendWithPriority,
     onClose: (Int) -> Unit,
+    onOneOnOneChatClick: (Int) -> Unit
 ) {
     var priority by remember { mutableStateOf(friendWithPriority.priority) }
     Dialog(
@@ -48,6 +49,11 @@ fun FriendProfileDialog(
                     priority = it
                 }
             )
+            OneOnOneChat(
+                onOneOnOneChatClick = {
+                    onOneOnOneChatClick(priority)
+                }
+            )
         }
     }
 }
@@ -60,8 +66,8 @@ fun FriendsInfoSection(friendWithPriority: FriendWithPriority) {
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = friendWithPriority.displayName,
-        style = MaterialTheme.typography.h6,
-        fontWeight = FontWeight.Bold
+        style = MaterialTheme.typography.h5,
+        fontWeight = FontWeight.SemiBold
     )
     Spacer(modifier = Modifier.height(14.dp))
     Text(
@@ -109,7 +115,7 @@ fun PrioritySection(
         Text(
             text = "Priority",
             style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold,
         )
         Slider(
             value = priority,
@@ -121,5 +127,21 @@ fun PrioritySection(
             steps = 3,
             modifier = Modifier
         )
+    }
+}
+
+@Composable
+fun OneOnOneChat(
+    onOneOnOneChatClick: () -> Unit
+) {
+    DebounceButton(
+        onClick = {
+            onOneOnOneChatClick()
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Text("1:1 Chat Start")
     }
 }

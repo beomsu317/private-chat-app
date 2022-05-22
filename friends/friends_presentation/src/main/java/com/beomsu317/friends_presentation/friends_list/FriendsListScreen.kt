@@ -28,11 +28,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Size
 import com.beomsu317.core.R
+import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core_ui.common.OneTimeEvent
+import com.beomsu317.core_ui.common.debounceClickable
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
 import com.beomsu317.core_ui.components.SearchTextField
 import com.beomsu317.core_ui.components.button.DebounceFloatingActionButton
 import com.beomsu317.friends_domain.model.FriendWithPriority
+import com.beomsu317.friends_domain.model.toFriend
 import com.beomsu317.friends_presentation.friend_profile.FriendProfileDialog
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -45,6 +48,7 @@ import me.saket.swipe.SwipeableActionsBox
 fun FriendsListScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onAddFriendButtonClick: () -> Unit,
+    onOneOnOneChatClick: (Friend) -> Unit,
     viewModel: FriendsListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -62,6 +66,7 @@ fun FriendsListScreen(
 
     var showProfileDialog by remember { mutableStateOf(false) }
     var currentFriend by remember { mutableStateOf(FriendWithPriority()) }
+    var isNavigating by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = oneTimeEventFlow) {
         oneTimeEventFlow.collect { oneTimeEvet ->
@@ -87,7 +92,10 @@ fun FriendsListScreen(
                 },
                 modifier = Modifier
                     .offset {
-                        IntOffset(x = 0, y = fabHeightState.roundToPx())
+                        IntOffset(
+                            x = -16.dp.roundToPx(),
+                            y = fabHeightState.roundToPx() - 16.dp.roundToPx()
+                        )
                     }
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "floating_action_button")
@@ -102,6 +110,14 @@ fun FriendsListScreen(
                         viewModel.onEvent(FriendsListEvent.UpdateUser(currentFriend.copy(priority = priority)))
                     }
                     showProfileDialog = false
+                },
+                onOneOnOneChatClick = { priority ->
+                    if (currentFriend.priority != priority) {
+                        viewModel.onEvent(FriendsListEvent.UpdateUser(currentFriend.copy(priority = priority)))
+                    }
+                    onOneOnOneChatClick(currentFriend.toFriend())
+                    showProfileDialog = false
+                    isNavigating = true
                 }
             )
         }
@@ -139,8 +155,10 @@ fun FriendsListScreen(
                     }
                 },
                 onShowProfileDialog = {
-                    currentFriend = it
-                    showProfileDialog = true
+                    if (!isNavigating) {
+                        currentFriend = it
+                        showProfileDialog = true
+                    }
                 }
             )
         }
@@ -243,7 +261,7 @@ fun FriendItem(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
-                .clickable {
+                .debounceClickable {
                     onShowProfileDialog(friend)
                 }
                 .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 25.dp),
@@ -303,7 +321,7 @@ fun PriorityIcon(
 
     LaunchedEffect(key1 = priority) {
         arcState.animateTo(
-            targetValue = 360f/5f * (priority + 1).toFloat(),
+            targetValue = 360f / 5f * (priority + 1).toFloat(),
             animationSpec = tween(
                 durationMillis = 1000,
                 easing = LinearOutSlowInEasing
