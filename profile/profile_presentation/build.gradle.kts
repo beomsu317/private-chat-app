@@ -6,6 +6,7 @@ dependencies {
     "implementation"(project(Modules.core))
     "implementation"(project(Modules.coreUi))
     "implementation"(project(Modules.profileDomain))
+    "implementation"(project(Modules.chatDomain))
 
     "implementation"(Coil.coilCompose)
     "implementation"(Accompanist.permissions)

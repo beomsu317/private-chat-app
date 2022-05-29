@@ -1,16 +1,11 @@
 package com.beomsu317.privatechatapp
 
 import android.app.Application
-import android.content.Intent
-import com.beomsu317.chat_domain.service.ChatService
+import com.beomsu317.privatechatapp.service.ChatService
+import com.beomsu317.core.common.startService
+import com.beomsu317.core.domain.use_case.CoreUseCases
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.flow.first
 
 @HiltAndroidApp
-class PrivateChatApp: Application() {
-    override fun onCreate() {
-        super.onCreate()
-//        Intent(this, ChatService::class.java).also {
-//            startService(it)
-//        }
-    }
-}
+class PrivateChatApp(): Application()

@@ -1,15 +1,14 @@
 package com.beomsu317.friends_presentation
 
-import android.util.Log
 import androidx.compose.material.SnackbarDuration
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.beomsu317.core.domain.model.Friend
-import com.beomsu317.core_ui.navigation.ChatScreen
-import com.beomsu317.core_ui.navigation.FRIENDS_GRAPH_ROUTE
-import com.beomsu317.core_ui.navigation.FriendsScreen
 import com.beomsu317.friends_presentation.add_friends.AddFriendsScreen
 import com.beomsu317.friends_presentation.friends_list.FriendsListScreen
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.FRIENDS_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.navigation.chat.ChatScreen
+import com.beomsu317.privatechatapp.navigation.friends.FriendsScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URLEncoder
@@ -28,15 +27,9 @@ fun NavGraphBuilder.friendsNavGraph(
                 onAddFriendButtonClick = {
                     navController.navigate(FriendsScreen.AddFriendScreen.route)
                 },
-                onOneOnOneChatClick = {
-                    val encodedFriend = Json.encodeToString<Friend>(it)
+                onOneOnOneChatClick = { friendId ->
                     navController.navigate(
-                        "${ChatScreen.ChatRoomScreen.route}/${
-                            URLEncoder.encode(
-                                encodedFriend,
-                                "UTF-8"
-                            )
-                        }",
+                        "${ChatScreen.ChatRoomScreen.route}/${friendId}",
                     ) {
                         launchSingleTop = true
                     }

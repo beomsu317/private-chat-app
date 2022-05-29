@@ -7,7 +7,7 @@ import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.friends_data.remote.PrivateChatApi
 import com.beomsu317.friends_data.repository.FriendsRepositoryImpl
 import com.beomsu317.friends_domain.repository.FriendsRepository
-import com.beomsu317.friends_data.local.PrivateChatDatabase
+import com.beomsu317.friends_data.local.FriendsDatabase
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -36,17 +36,17 @@ object FriendsDataModule {
 
     @Provides
     @Singleton
-    fun provideFriendsRepository(api: PrivateChatApi, database: PrivateChatDatabase, appDataStore: AppDataStore): FriendsRepository {
+    fun provideFriendsRepository(api: PrivateChatApi, database: FriendsDatabase, appDataStore: AppDataStore): FriendsRepository {
         return FriendsRepositoryImpl(api, database, appDataStore, Dispatchers.IO)
     }
 
     @Provides
     @Singleton
-    fun providePrivateChatDatabase(@ApplicationContext context: Context): PrivateChatDatabase {
+    fun providePrivateChatDatabase(@ApplicationContext context: Context): FriendsDatabase {
         return Room.databaseBuilder(
             context,
-            PrivateChatDatabase::class.java,
-            "private_chat.db"
+            FriendsDatabase::class.java,
+            "friends.db"
         ).build()
     }
 }

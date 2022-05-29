@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.beomsu317.chat_presentation.chatNavGraph
-import com.beomsu317.core_ui.navigation.ROOT_GRAPH_ROUTE
-import com.beomsu317.core_ui.navigation.STARTUP_GRAPH_ROUTE
 import com.beomsu317.core_ui.navigation.startupNavGraph
 import com.beomsu317.friends_presentation.friendsNavGraph
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.ROOT_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.STARTUP_GRAPH_ROUTE
 import com.beomsu317.profile_presentation.profileNavGraph
 
 @Composable

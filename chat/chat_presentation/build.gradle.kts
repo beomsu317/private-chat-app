@@ -10,4 +10,6 @@ dependencies {
     "implementation"(Serialization.kotlinxSerializationJson)
 
     "implementation"(Coil.coilCompose)
+
+    "implementation"("androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02")
 }

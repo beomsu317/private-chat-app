@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".PrivateChatApp"
@@ -16,10 +16,11 @@
         android:theme="@style/Theme.PrivateChatApp"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.PrivateChatApp">
+            android:theme="@style/Theme.PrivateChatApp"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,16 +29,8 @@
         </activity>
 
         <service
-            android:name="com.beomsu317.chat_domain.service.ChatService"
+            android:name=".service.ChatService"
             android:enabled="true" />
-
-<!--        <receiver-->
-<!--            android:name="com.beomsu317.chat_domain.receiver.StartupReceiver"-->
-<!--            android:exported="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -2,10 +2,10 @@ package com.beomsu317.profile_presentation.my_profile
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -65,6 +65,8 @@ fun MyProfileScreen(
 ) {
     val state = viewModel.state
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
+    val context = LocalContext.current
+
     var edit by remember { mutableStateOf(false) }
     var uri by remember { mutableStateOf<Uri?>(null) }
 

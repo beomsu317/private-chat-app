@@ -1,4 +1,4 @@
-package com.beomsu317.core_ui.navigation
+package com.beomsu317.privatechatapp.navigation.bottom_navigation
 
 import androidx.annotation.DrawableRes
 import com.beomsu317.core.R

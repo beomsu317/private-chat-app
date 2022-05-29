@@ -48,7 +48,7 @@ import me.saket.swipe.SwipeableActionsBox
 fun FriendsListScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onAddFriendButtonClick: () -> Unit,
-    onOneOnOneChatClick: (Friend) -> Unit,
+    onOneOnOneChatClick: (String) -> Unit,
     viewModel: FriendsListViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
@@ -115,7 +115,7 @@ fun FriendsListScreen(
                     if (currentFriend.priority != priority) {
                         viewModel.onEvent(FriendsListEvent.UpdateUser(currentFriend.copy(priority = priority)))
                     }
-                    onOneOnOneChatClick(currentFriend.toFriend())
+                    onOneOnOneChatClick(currentFriend.id)
                     showProfileDialog = false
                     isNavigating = true
                 }
@@ -130,6 +130,7 @@ fun FriendsListScreen(
                     Text(text = "Friends")
                 }
             )
+            Spacer(modifier = Modifier.height(16.dp))
             SearchSection(onSearch = {
                 viewModel.searchText = it
                 scope.launch {

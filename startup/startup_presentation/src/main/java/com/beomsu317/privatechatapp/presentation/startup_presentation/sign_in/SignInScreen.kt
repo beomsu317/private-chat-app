@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,6 @@ import com.beomsu317.core_ui.components.DebounceButton
 import com.beomsu317.core_ui.components.button.DebounceIconButton
 import com.beomsu317.core_ui.components.button.DebounceTextButton
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 
 @OptIn(InternalCoroutinesApi::class)
 @Composable

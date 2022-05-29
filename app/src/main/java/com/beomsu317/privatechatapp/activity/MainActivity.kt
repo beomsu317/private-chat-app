@@ -1,11 +1,9 @@
-package com.beomsu317.privatechatapp
+package com.beomsu317.privatechatapp.activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -17,14 +15,26 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.beomsu317.core_ui.navigation.*
+import com.beomsu317.core.common.startService
+import com.beomsu317.core.domain.use_case.CoreUseCases
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.bottomNavBarRoutes
+import com.beomsu317.privatechatapp.navigation.chat.ChatScreen
+import com.beomsu317.privatechatapp.navigation.friends.FriendsScreen
+import com.beomsu317.privatechatapp.navigation.startup.StartupScreen
 import com.beomsu317.privatechatapp.presentation.SetupNavGraph
+import com.beomsu317.privatechatapp.service.ChatService
 import com.beomsu317.privatechatapp.ui.theme.PrivateChatAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var coreUseCases: CoreUseCases
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,6 +42,16 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val scaffoldState = rememberScaffoldState()
                 val scope = rememberCoroutineScope()
+
+                LaunchedEffect(key1 = Unit) {
+                    scope.launch {
+                        val token = coreUseCases.getTokenFlowUseCase().first()
+                        if (token.isNotEmpty()) {
+                            startService(ChatService::class.java)
+                        }
+                    }
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     scaffoldState = scaffoldState,

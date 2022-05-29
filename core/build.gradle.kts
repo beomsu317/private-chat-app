@@ -13,4 +13,8 @@ dependencies {
 
     "implementation"(Network.retrofit)
     "implementation"(Network.okhttp)
+
+    "implementation"(Room.roomKtx)
+    "api"(Room.roomRuntime)
+    "kapt"(Room.roomCompiler)
 }

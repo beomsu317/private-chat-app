@@ -1,5 +1,7 @@
 package com.beomsu317.core_ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -7,7 +9,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.beomsu317.core_ui.theme.WhiteSmoke
 
 @Composable
 fun PrivateChatTopAppBar(
@@ -16,15 +20,17 @@ fun PrivateChatTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
-        modifier = Modifier.fillMaxWidth(),
         backgroundColor = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.onBackground,
         elevation = 0.dp,
-
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(width = 1.dp, color = Color.LightGray),
         )
     {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             if (navigationIcon == null) {
                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))

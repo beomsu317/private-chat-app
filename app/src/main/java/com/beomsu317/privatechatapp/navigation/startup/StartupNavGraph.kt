@@ -1,12 +1,19 @@
 package com.beomsu317.core_ui.navigation
 
+import android.content.Intent
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.*
 import androidx.navigation.compose.composable
+import com.beomsu317.core.common.startService
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.FRIENDS_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.STARTUP_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.navigation.startup.StartupScreen
 import com.beomsu317.privatechatapp.presentation.startup_presentation.intro.IntroScreen
 import com.beomsu317.privatechatapp.presentation.startup_presentation.sign_in.SignInScreen
 import com.beomsu317.privatechatapp.presentation.startup_presentation.sign_up.SignUpScreen
 import com.beomsu317.privatechatapp.presentation.startup_presentation.splash.SplashScreen
+import com.beomsu317.privatechatapp.service.ChatService
 
 fun NavGraphBuilder.startupNavGraph(
     navController: NavHostController,
@@ -39,8 +46,10 @@ fun NavGraphBuilder.startupNavGraph(
             })
         }
         composable(StartupScreen.SignInScreen.route) {
+            val context = LocalContext.current
             SignInScreen(
                 onSignedIn = {
+                    context.startService(ChatService::class.java)
                     navController.navigate(FRIENDS_GRAPH_ROUTE) {
                         popUpTo(STARTUP_GRAPH_ROUTE) {
                             inclusive = true

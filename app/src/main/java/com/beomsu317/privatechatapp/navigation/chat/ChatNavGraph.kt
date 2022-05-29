@@ -5,8 +5,9 @@ import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.beomsu317.chat_presentation.chat_room.ChatRoomScreen
 import com.beomsu317.chat_presentation.chat_room_list.ChatRoomListScreen
-import com.beomsu317.core_ui.navigation.CHAT_GRAPH_ROUTE
-import com.beomsu317.core_ui.navigation.ChatScreen
+import com.beomsu317.privatechatapp.navigation.bottom_navigation.CHAT_GRAPH_ROUTE
+import com.beomsu317.privatechatapp.navigation.chat.ChatScreen
+
 
 fun NavGraphBuilder.chatNavGraph(
     navController: NavHostController,
@@ -17,13 +18,18 @@ fun NavGraphBuilder.chatNavGraph(
         route = CHAT_GRAPH_ROUTE
     ) {
         composable(ChatScreen.ChatRoomListScreen.route) {
-            ChatRoomListScreen()
+            ChatRoomListScreen(
+                onMessageClick = { friendId ->
+                    navController.navigate("${ChatScreen.ChatRoomScreen.route}/${friendId}")
+                },
+                showSnackbar = showSnackbar
+            )
         }
         composable(
-            route = "${ChatScreen.ChatRoomScreen.route}/{friend}",
+            route = "${ChatScreen.ChatRoomScreen.route}/{friendId}",
             arguments = listOf(
                 navArgument(
-                    name = "friend",
+                    name = "friendId",
                     builder = {
                         type = NavType.StringType
                     }

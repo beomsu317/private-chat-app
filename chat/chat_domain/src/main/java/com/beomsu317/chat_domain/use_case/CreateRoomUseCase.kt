@@ -18,7 +18,6 @@ class CreateRoomUseCase @Inject constructor(
         try {
             emit(Resource.Loading<Room>())
             val room = chatRepository.createRoom(userId)
-            Log.d("TAG", "invoke: ${room}")
             emit(Resource.Success<Room>(data = room))
         } catch (e: Exception) {
             emit(Resource.Error<Room>(e.localizedMessage))

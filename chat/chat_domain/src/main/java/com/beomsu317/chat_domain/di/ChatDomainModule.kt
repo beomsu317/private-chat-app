@@ -1,8 +1,8 @@
 package com.beomsu317.chat_domain.di
 
 import com.beomsu317.chat_domain.repository.ChatRepository
-import com.beomsu317.chat_domain.use_case.ChatUseCases
-import com.beomsu317.chat_domain.use_case.CreateRoomUseCase
+import com.beomsu317.chat_domain.use_case.*
+import com.beomsu317.core.domain.repository.CoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +15,17 @@ object ChatDomainModule {
 
     @Provides
     @Singleton
-    fun provideChatUseCases(chatRepository: ChatRepository): ChatUseCases {
+    fun provideChatUseCases(chatRepository: ChatRepository, coreRepository: CoreRepository): ChatUseCases {
         return ChatUseCases(
-            createRoomUseCase = CreateRoomUseCase(chatRepository)
+            createRoomUseCase = CreateRoomUseCase(chatRepository),
+            getLastMessagesFlowUseCase = GetLastMessagesFlowUseCase(chatRepository),
+            getMessagesFlowUseCase = GetMessagesFlowUseCase(chatRepository),
+            getFriendUseCase = GetFriendUseCase(chatRepository),
+            sendMessageUseCase = SendMessageUseCase(chatRepository),
+            readAllMessagesUseCase = ReadAllMessagesUseCase(chatRepository),
+            getRecentMessagesUseCase = GetRecentMessagesUseCase(chatRepository, coreRepository = coreRepository)
         )
     }
+
+
 }

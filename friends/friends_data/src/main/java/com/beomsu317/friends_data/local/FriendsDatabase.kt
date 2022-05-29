@@ -9,7 +9,7 @@ import com.beomsu317.friends_data.local.entity.FriendEntity
     entities = [FriendEntity::class],
     version = 1
 )
-abstract class PrivateChatDatabase: RoomDatabase() {
+abstract class FriendsDatabase: RoomDatabase() {
 
     abstract fun friendsDao(): FriendsDao
 }

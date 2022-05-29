@@ -1,29 +1,26 @@
 package com.beomsu317.friends_data.repository
 
-import android.util.Log
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core.domain.model.UserFriend
 import com.beomsu317.friends_data.remote.PrivateChatApi
 import com.beomsu317.friends_data.remote.request.AddFriendRequest
 import com.beomsu317.friends_data.remote.request.DeleteFriendRequest
 import com.beomsu317.friends_domain.repository.FriendsRepository
-import com.beomsu317.friends_data.local.PrivateChatDatabase
+import com.beomsu317.friends_data.local.FriendsDatabase
 import com.beomsu317.core.data.mapper.toDto
 import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.friends_data.mapper.toEntity
 import com.beomsu317.friends_data.mapper.toFriend
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
 class FriendsRepositoryImpl(
     private val api: PrivateChatApi,
-    private val database: PrivateChatDatabase,
+    private val database: FriendsDatabase,
     private val appDataStore: AppDataStore,
     private val dispatcher: CoroutineDispatcher
 ) : FriendsRepository {

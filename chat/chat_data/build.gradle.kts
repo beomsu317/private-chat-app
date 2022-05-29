@@ -11,4 +11,8 @@ dependencies {
 
     "implementation"(Serialization.kotlinxSerializationJson)
     "implementation"(Serialization.kotlinxSerializationConverter)
+
+    "implementation"(Room.roomKtx)
+    "api"(Room.roomRuntime)
+    "kapt"(Room.roomCompiler)
 }

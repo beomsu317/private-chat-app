@@ -1,4 +1,4 @@
-package com.beomsu317.core_ui.navigation
+package com.beomsu317.privatechatapp.navigation.startup
 
 sealed class StartupScreen(val route: String) {
     object SplashScreen : StartupScreen(route = "splash_screen")
