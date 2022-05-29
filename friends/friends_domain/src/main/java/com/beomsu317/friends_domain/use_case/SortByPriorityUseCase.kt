@@ -25,7 +25,9 @@ class SortByPriorityUseCase {
                         email = friendsList[index].email,
                         photoUrl = friendsList[index].photoUrl,
                         displayName = friendsList[index].displayName,
-                        priority = userFriend.priority
+                        priority = userFriend.priority,
+                        numberOfFriends = friendsList[index].numberOfFriends,
+                        numberOfRooms = friendsList[index].numberOfRooms
                     )
                     friendsList = friendsList - friendsList.get(index)
                     return@forEachIndexed

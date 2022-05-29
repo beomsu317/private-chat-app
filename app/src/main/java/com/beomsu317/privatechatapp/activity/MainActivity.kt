@@ -4,13 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -36,42 +40,46 @@ class MainActivity : ComponentActivity() {
     lateinit var coreUseCases: CoreUseCases
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         setContent {
-            PrivateChatAppTheme {
-                val navController = rememberNavController()
-                val scaffoldState = rememberScaffoldState()
-                val scope = rememberCoroutineScope()
+            Box(modifier = Modifier.systemBarsPadding()) {
+                PrivateChatAppTheme {
+                    val navController = rememberNavController()
+                    val scaffoldState = rememberScaffoldState()
+                    val scope = rememberCoroutineScope()
 
-                LaunchedEffect(key1 = Unit) {
-                    scope.launch {
-                        val token = coreUseCases.getTokenFlowUseCase().first()
-                        if (token.isNotEmpty()) {
-                            startService(ChatService::class.java)
+                    LaunchedEffect(key1 = Unit) {
+                        scope.launch {
+                            val token = coreUseCases.getTokenFlowUseCase().first()
+                            if (token.isNotEmpty()) {
+                                startService(ChatService::class.java)
+                            }
                         }
                     }
-                }
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    scaffoldState = scaffoldState,
-                    bottomBar = {
-                        BottomNavigationBar(navController)
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        scaffoldState = scaffoldState,
+                        bottomBar = {
+                            BottomNavigationBar(navController)
+                        }
+                    ) { innerPadding ->
+                        SetupNavGraph(
+                            navHostController = navController,
+                            innerPadding = innerPadding,
+                            showSnackbar = { message, duration ->
+                                scope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = message,
+                                        duration = duration
+                                    )
+                                }
+                            })
                     }
-                ) { innerPadding ->
-                    SetupNavGraph(
-                        navHostController = navController,
-                        innerPadding = innerPadding,
-                        showSnackbar = { message, duration ->
-                            scope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    message = message,
-                                    duration = duration
-                                )
-                            }
-                        })
                 }
             }
+
         }
     }
 }

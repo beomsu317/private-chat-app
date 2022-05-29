@@ -10,6 +10,8 @@ data class FriendEntity(
     @PrimaryKey val id: String,
     val email: String,
     val photoUrl: String,
-    val displayName: String
+    val displayName: String,
+    val numberOfFriends: Int,
+    val numberOfRooms: Int
 )
 

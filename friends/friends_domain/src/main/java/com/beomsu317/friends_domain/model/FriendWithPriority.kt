@@ -7,7 +7,9 @@ data class FriendWithPriority(
     val email: String = "",
     val photoUrl: String = "",
     val displayName: String = "",
-    val priority: Int = 0
+    val priority: Int = 0,
+    val numberOfFriends: Int = 0,
+    val numberOfRooms: Int = 0
 )
 
 fun FriendWithPriority.toFriend(): Friend {
@@ -15,6 +17,8 @@ fun FriendWithPriority.toFriend(): Friend {
         id = id,
         email = email,
         photoUrl = photoUrl,
-        displayName = displayName
+        displayName = displayName,
+        numberOfFriends = numberOfFriends,
+        numberOfRooms = numberOfRooms
     )
 }

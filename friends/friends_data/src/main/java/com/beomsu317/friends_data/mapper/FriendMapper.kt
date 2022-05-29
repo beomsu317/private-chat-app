@@ -9,7 +9,9 @@ fun Friend.toDto(): FriendDto {
         id = id,
         email = email,
         photoUrl = photoUrl,
-        displayName = displayName
+        displayName = displayName,
+        numberOfFriends = numberOfFriends,
+        numberOfRooms = numberOfRooms
     )
 }
 
@@ -18,7 +20,9 @@ fun FriendDto.toFriend(): Friend {
         id = id,
         email = email,
         photoUrl = photoUrl,
-        displayName = displayName
+        displayName = displayName,
+        numberOfFriends = numberOfFriends,
+        numberOfRooms = numberOfRooms
     )
 }
 
@@ -27,7 +31,9 @@ fun FriendEntity.toFriend(): Friend {
         id = id,
         email = email,
         photoUrl = photoUrl,
-        displayName = displayName
+        displayName = displayName,
+        numberOfFriends = numberOfFriends,
+        numberOfRooms = numberOfRooms
     )
 }
 
@@ -36,7 +42,9 @@ fun FriendDto.toEntity(): FriendEntity {
         id = id,
         email = email,
         photoUrl = photoUrl,
-        displayName = displayName
+        displayName = displayName,
+        numberOfFriends = numberOfFriends,
+        numberOfRooms = numberOfRooms
     )
 }
 
@@ -45,6 +53,8 @@ fun Friend.toEntity(): FriendEntity {
         id = id,
         email = email,
         photoUrl = photoUrl,
-        displayName = displayName
+        displayName = displayName,
+        numberOfFriends = numberOfFriends,
+        numberOfRooms = numberOfRooms
     )
 }

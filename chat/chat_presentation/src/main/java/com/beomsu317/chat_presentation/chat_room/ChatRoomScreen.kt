@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -70,7 +72,8 @@ fun ChatRoomScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
     ) {
         PrivateChatTopAppBar(
             title = {
@@ -109,7 +112,7 @@ fun ChatRoomScreen(
             }
         )
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().imePadding()
         ) {
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize(),
@@ -153,8 +156,8 @@ fun MessagesSection(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier,
-        state = lazyListState
+        state = lazyListState,
+        modifier = modifier
     ) {
         items(messages) { message ->
             if (user.id == message.senderId) {
