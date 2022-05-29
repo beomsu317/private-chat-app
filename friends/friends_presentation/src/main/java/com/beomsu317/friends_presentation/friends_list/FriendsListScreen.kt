@@ -131,12 +131,9 @@ fun FriendsListScreen(
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            SearchSection(onSearch = {
+            SearchTextField(onSearch = {
                 viewModel.searchText = it
-                scope.launch {
-                    delay(500L)
-                    viewModel.onEvent(FriendsListEvent.Search)
-                }
+                viewModel.onEvent(FriendsListEvent.Search)
             })
             Spacer(modifier = Modifier.height(10.dp))
             FriendsListSection(
@@ -164,13 +161,6 @@ fun FriendsListScreen(
             )
         }
     }
-}
-
-@Composable
-fun SearchSection(
-    onSearch: (String) -> Unit
-) {
-    SearchTextField(onSearch)
 }
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -72,7 +72,7 @@ class FriendsListViewModel @Inject constructor(
 
     private fun search() {
         viewModelScope.launch {
-            val friends = friendsUseCases.searchFriendUseCase(searchText).toSet()
+            val friends = friendsUseCases.searchUserFriendUseCase(searchText).toSet()
             val user = friendsUseCases.getUserFlowUseCase().first()
             val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, friends)
             state = state.copy(friends = sortedFriendsList, isLoading = false)

@@ -12,27 +12,37 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(
     onSearch: (String) -> Unit
 ) {
-    var searchText by remember {
+    var searchText by rememberSaveable {
         mutableStateOf("")
     }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope()
+    var job: Job? = null
 
     OutlinedTextField(
         value = searchText,
         onValueChange = {
             searchText = it.replace("\n", "")
-            onSearch(searchText)
+            job?.cancel()
+            job = scope.launch {
+                delay(500L)
+                onSearch(searchText)
+            }
         },
         singleLine = true,
         maxLines = 1,

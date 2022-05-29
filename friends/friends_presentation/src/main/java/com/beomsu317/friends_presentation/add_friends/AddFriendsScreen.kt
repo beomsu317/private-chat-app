@@ -27,34 +27,29 @@ import coil.size.Size
 import com.beomsu317.core_ui.components.PriorityDialog
 import com.beomsu317.core.R
 import com.beomsu317.core.domain.model.Friend
+import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.core_ui.components.DebounceButton
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
+import com.beomsu317.core_ui.components.SearchTextField
 import com.beomsu317.core_ui.components.button.DebounceIconButton
 
 @Composable
 fun AddFriendsScreen(
     onNavigateBack: () -> Unit,
+    showSnackbar: (String, SnackbarDuration) -> Unit,
     viewModel: AddFriendsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    var friendId by rememberSaveable { mutableStateOf("") }
+    val oneTimeEventFlow = viewModel.oneTimeEventFlow
 
-    if (showDialog) {
-        PriorityDialog(
-            onClose = {
-                showDialog = false
-            },
-            onConfirmClick = { priority ->
-                viewModel.onEvent(
-                    AddFriendsEvent.AddFriend(
-                        friendId = friendId,
-                        priority = priority
-                    )
-                )
-                showDialog = false
+    LaunchedEffect(key1 = Unit) {
+        oneTimeEventFlow.collect { oneTimeEvent ->
+            when (oneTimeEvent) {
+                is OneTimeEvent.ShowSnackbar -> {
+                    showSnackbar(oneTimeEvent.message, SnackbarDuration.Short)
+                }
             }
-        )
+        }
     }
 
     Box(
@@ -86,11 +81,20 @@ fun AddFriendsScreen(
                     }
                 }
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            SearchTextField(
+                onSearch = {
+                    viewModel.searchText = it
+                    viewModel.onEvent(AddFriendsEvent.SearchFriends)
+                }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             FriendsListSection(
                 friends = state.friends,
                 onFriendAddClick = {
-                    friendId = it
-                    showDialog = true
+                    viewModel.onEvent(
+                        AddFriendsEvent.AddFriend(friendId = it)
+                    )
                 }
             )
         }
@@ -140,41 +144,47 @@ fun FriendItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(
-                            if (!friend.photoUrl.isEmpty()) {
-                                friend.photoUrl
-                            } else {
-                                R.drawable.user_placeholder
-                            }
-                        )
-                        .size(Size.ORIGINAL)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = friend.displayName,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                )
-                Column(
-                    modifier = Modifier,
-                    verticalArrangement = Arrangement.Center
+                Row(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = friend.displayName,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onBackground,
-                        fontWeight = FontWeight.Bold
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(
+                                if (!friend.photoUrl.isEmpty()) {
+                                    friend.photoUrl
+                                } else {
+                                    R.drawable.user_placeholder
+                                }
+                            )
+                            .size(Size.ORIGINAL)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = friend.displayName,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(2.dp)
+                            .clip(CircleShape)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = friend.email,
-                        style = MaterialTheme.typography.body2,
-                        color = Color.Gray
-                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = friend.displayName,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.onBackground,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = friend.email,
+                            style = MaterialTheme.typography.body2,
+                            color = Color.Gray
+                        )
+                    }
                 }
 
                 Button(

@@ -105,6 +105,7 @@ fun LastMessageItem(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 4.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -144,7 +145,6 @@ fun LastMessageItem(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
             Text(
                 text =
                 if (messageElapsedTime > 0 && messageElapsedTime <= 60) {
@@ -169,7 +169,7 @@ fun LastMessageItem(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .padding(start = 10.dp),
+                .padding(start = 20.dp),
         )
     }
 }

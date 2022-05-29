@@ -6,13 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
-import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.core.domain.model.UserFriend
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -22,7 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AddFriendsViewModel @Inject constructor(
     private val friendsUseCases: FriendsUseCases,
-    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
     var state by mutableStateOf(AddFriendsState())
@@ -31,67 +28,50 @@ class AddFriendsViewModel @Inject constructor(
     private val _oneTimeEvent = Channel<OneTimeEvent>()
     val oneTimeEventFlow = _oneTimeEvent.receiveAsFlow()
 
-    init {
-        getAllFriends()
-    }
+    var searchText by mutableStateOf("")
 
     fun onEvent(event: AddFriendsEvent) {
         when (event) {
             is AddFriendsEvent.AddFriend -> {
-                addFriend(friendId = event.friendId, priority = event.priority)
+                addFriend(friendId = event.friendId)
             }
-            is AddFriendsEvent.RefreshAllFriends -> {
-                getAllFriends()
+            is AddFriendsEvent.SearchFriends -> {
+                searchFriends()
             }
         }
     }
 
-    private fun getAllFriends() {
+    private fun addFriend(friendId: String) {
         viewModelScope.launch {
-            friendsUseCases.getAllFriendsUseCase().onEach { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        state = state.copy(friends = resource.data ?: emptySet(), isLoading = false)
-                    }
-                    is Resource.Error -> {
-                        _oneTimeEvent.send(
-                            OneTimeEvent.ShowSnackbar(
-                                resource.message ?: "An unknown error occured"
-                            )
-                        )
-                        state = state.copy(isLoading = false)
-                    }
-                    is Resource.Loading -> {
-                        state = state.copy(isLoading = true)
-                    }
-                }
-            }.launchIn(viewModelScope)
-        }
-    }
-
-    private fun addFriend(friendId: String, priority: Int) {
-        viewModelScope.launch {
-            val token = appDataStore.tokenFlow.first()
-            friendsUseCases.addFriendUseCase(userFriend = UserFriend(friendId, priority)).onEach { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        val friends = state.friends.filter {
-                            it.id != friendId
+            friendsUseCases.addFriendUseCase(userFriend = UserFriend(friendId, 2))
+                .onEach { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            val friends = state.friends.filter {
+                                it.id != friendId
+                            }
+                            state = state.copy(friends = friends.toSet(), isLoading = false)
                         }
-                        state = state.copy(friends = friends.toSet(), isLoading = false)
-                    }
-                    is Resource.Error -> {
-                        _oneTimeEvent.send(
-                            OneTimeEvent.ShowSnackbar(
-                                resource.message ?: "An unknown error occured"
+                        is Resource.Error -> {
+                            _oneTimeEvent.send(
+                                OneTimeEvent.ShowSnackbar(
+                                    resource.message ?: "An unknown error occured"
+                                )
                             )
-                        )
-                        state = state.copy(isLoading = false)
+                            state = state.copy(isLoading = false)
+                        }
+                        is Resource.Loading -> {
+                            state = state.copy(isLoading = true)
+                        }
                     }
-                    is Resource.Loading -> {
-                        state = state.copy(isLoading = true)
-                    }
-                }
+                }.launchIn(viewModelScope)
+        }
+    }
+
+    private fun searchFriends() {
+        viewModelScope.launch {
+            friendsUseCases.searchFriendsUseCase(searchText = searchText).onEach {
+                state = state.copy(friends = it)
             }.launchIn(viewModelScope)
         }
     }

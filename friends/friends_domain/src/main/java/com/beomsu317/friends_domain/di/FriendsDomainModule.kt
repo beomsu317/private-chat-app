@@ -19,12 +19,12 @@ object FriendsDomainModule {
         return FriendsUseCases(
             addFriendUseCase = AddFriendUseCase(friendsRepository),
             deleteFriendUseCase = DeleteFriendUseCase(friendsRepository),
-            getAllFriendsUseCase = GetAllFriendsUseCase(friendsRepository),
+            searchFriendsUseCase = SearchFriendsUseCase(friendsRepository),
             getMyFriendsUseCase = GetMyFriendsUseCase(friendsRepository),
             sortByPriorityUseCase = SortByPriorityUseCase(),
             updateUserUseCase = UpdateUserUseCase(coreRepository),
             getUserFlowUseCase = GetUserFlowUseCase(coreRepository),
-            searchFriendUseCase = SearchFriendUseCase(friendsRepository)
+            searchUserFriendUseCase = SearchUserFriendUseCase(friendsRepository)
         )
     }
 }

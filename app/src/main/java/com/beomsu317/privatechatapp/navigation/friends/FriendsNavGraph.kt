@@ -40,7 +40,8 @@ fun NavGraphBuilder.friendsNavGraph(
             AddFriendsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
-                }
+                },
+                showSnackbar = showSnackbar
             )
         }
     }
