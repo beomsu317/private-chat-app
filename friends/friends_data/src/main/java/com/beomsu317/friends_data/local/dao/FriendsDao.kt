@@ -24,7 +24,7 @@ interface FriendsDao {
     suspend fun deleteAllUserFriends()
 
     @Query("SELECT * FROM userfriendentity")
-    fun getUserFriends(): Flow<List<UserFriendEntity>>
+    fun getUserFriends(): List<UserFriendEntity>
 
     @Query("SELECT * FROM userfriendentity WHERE id = :id")
     suspend fun getUserFriend(id: String): UserFriendEntity

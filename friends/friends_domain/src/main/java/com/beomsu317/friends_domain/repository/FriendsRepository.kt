@@ -8,7 +8,7 @@ interface FriendsRepository {
 
     suspend fun getUserFriends(refresh: Boolean): Flow<Set<Friend>>
 
-    suspend fun searchFriends(searchText: String): Set<Friend>
+    suspend fun searchFriends(searchText: String): Flow<Set<Friend>>
 
     suspend fun addFriend(userFriend: UserFriend)
 

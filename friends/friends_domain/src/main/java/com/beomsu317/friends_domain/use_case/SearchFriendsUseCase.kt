@@ -11,5 +11,5 @@ import javax.inject.Inject
 class SearchFriendsUseCase @Inject constructor(
     private val repository: FriendsRepository
 ) {
-    suspend operator fun invoke(searchText: String): Set<Friend> = repository.searchFriends(searchText)
+    suspend operator fun invoke(searchText: String): Flow<Set<Friend>> = repository.searchFriends(searchText)
 }

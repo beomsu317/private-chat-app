@@ -13,6 +13,7 @@ import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -41,12 +42,6 @@ class AddFriendsViewModel @Inject constructor(
             is AddFriendsEvent.SearchFriends -> {
                 searchFriends()
             }
-        }
-    }
-
-    private val handler = CoroutineExceptionHandler { _, e ->
-        viewModelScope.launch {
-            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
         }
     }
 
@@ -81,8 +76,12 @@ class AddFriendsViewModel @Inject constructor(
     }
 
     private fun searchFriends() {
-        viewModelScope.launch(handler) {
-            state = state.copy(friends = friendsUseCases.searchFriendsUseCase(searchText = searchText))
+        viewModelScope.launch {
+            friendsUseCases.searchFriendsUseCase(searchText = searchText).onEach {
+                state = state.copy(friends = it)
+            }.catch { e ->
+                _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
+            }.launchIn(viewModelScope)
         }
     }
 }

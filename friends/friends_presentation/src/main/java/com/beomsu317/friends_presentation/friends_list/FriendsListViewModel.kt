@@ -1,5 +1,6 @@
 package com.beomsu317.friends_presentation.friends_list
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -34,13 +35,6 @@ class FriendsListViewModel @Inject constructor(
 
     private var getFriendsJob: Job? = null
 
-    private val handler = CoroutineExceptionHandler { _, e ->
-        viewModelScope.launch {
-            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
-            state = state.copy(isLoading = false)
-        }
-    }
-
     init {
         getFriends(true)
     }
@@ -63,10 +57,11 @@ class FriendsListViewModel @Inject constructor(
     }
 
     private fun getFriends(refresh: Boolean) {
-        viewModelScope.launch(handler) {
+        viewModelScope.launch {
             state = state.copy(isLoading = true)
             getFriendsJob?.cancel()
             getFriendsJob = friendsUseCases.getUserFriendsUseCase(refresh).onEach {
+                Log.d("TAG", "getFriends: ${it}")
                 val user = coreUseCases.getUserFlowUseCase().first()
                 val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, it)
                 if (searchText.isNullOrEmpty()) {
@@ -74,6 +69,9 @@ class FriendsListViewModel @Inject constructor(
                 } else {
                     search()
                 }
+            }.catch { e ->
+                _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
+                state = state.copy(isLoading = false)
             }.launchIn(viewModelScope)
         }
     }
