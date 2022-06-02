@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.beomsu317.chat_domain.repository.ChatRepository
+import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.core.domain.repository.CoreRepository
 import com.beomsu317.privatechatapp.activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,9 @@ class ChatService : Service() {
 
     @Inject
     lateinit var chatRepository: ChatRepository
+
+    @Inject
+    lateinit var chatUseCases: ChatUseCases
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
@@ -60,39 +64,35 @@ class ChatService : Service() {
         }
 
         scope.launch {
-            val token = coreRepository.getTokenFlow().first()
-            if (token.isNullOrEmpty()) {
-                return@launch
-            }
-            if (!chatRepository.isConnected()) {
-                val intent = Intent(this@ChatService, MainActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                }
-                val pendingIntent: PendingIntent = PendingIntent.getActivity(this@ChatService, 0, intent, FLAG_IMMUTABLE)
+            chatUseCases.connectToServer(
+                scope = this,
+                onNotificate = { displayName, message ->
+                    scope.launch {
+                        val intent = Intent(this@ChatService, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        }
+                        val pendingIntent: PendingIntent = PendingIntent.getActivity(this@ChatService, 0, intent,
+                            FLAG_IMMUTABLE
+                        )
 
-                chatRepository.connectToChatServer(
-                    scope = scope,
-                    onNotificate = { displayName, message ->
-                        scope.launch {
-                            val settings = coreRepository.getSettingsFlow().first()
-                            val user = coreRepository.getUserFlow().first()
-                            if (settings.notifications && user.id != message.senderId) {
-                                val notification =
-                                    NotificationCompat.Builder(this@ChatService, CHANNEL_ID)
-                                        .setContentTitle(displayName)
-                                        .setContentText(message.message)
-                                        .setSmallIcon(com.beomsu317.core.R.drawable.logo)
-                                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                        .setAutoCancel(true)
-                                        .setContentIntent(pendingIntent)
-                                startForeground(NOTIFICATION_ID, notification.build())
-                                stopForeground(false)
-                            }
+                        val settings = coreRepository.getSettingsFlow().first()
+                        val user = coreRepository.getUserFlow().first()
+                        if (settings.notifications && user.id != message.senderId) {
+                            val notification =
+                                NotificationCompat.Builder(this@ChatService, CHANNEL_ID)
+                                    .setContentTitle(displayName)
+                                    .setContentText(message.message)
+                                    .setSmallIcon(com.beomsu317.core.R.drawable.logo)
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    .setAutoCancel(true)
+                                    .setContentIntent(pendingIntent)
+                            startForeground(NOTIFICATION_ID, notification.build())
+                            stopForeground(false)
                         }
                     }
-                )
-            }
+                }
+            )
         }
 
         return START_STICKY

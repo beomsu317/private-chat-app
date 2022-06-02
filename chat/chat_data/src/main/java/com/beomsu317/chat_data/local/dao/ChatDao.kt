@@ -13,7 +13,7 @@ interface ChatDao {
     @Insert
     suspend fun insertMessage(messageEntity: MessageEntity)
 
-    @Query("SELECT * FROM messageentity WHERE roomId = :roomId")
+    @Query("SELECT * FROM messageentity WHERE roomId = :roomId ORDER BY timestamp")
     fun getMessages(roomId: String): Flow<List<Message>>
 
     @Query("SELECT * FROM messageentity GROUP BY roomId HAVING MAX(timestamp)")
@@ -33,4 +33,10 @@ interface ChatDao {
 
     @Query("SELECT * FROM roomentity WHERE id = :roomId")
     suspend fun getRoomInfo(roomId: String): RoomEntity
+
+    @Query("DELETE FROM roomentity WHERE id = :roomId")
+    suspend fun deleteRoom(roomId: String)
+
+    @Query("DELETE FROM messageentity WHERE roomId = :roomId")
+    suspend fun deleteRoomMessages(roomId: String)
 }

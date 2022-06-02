@@ -23,7 +23,9 @@ object ChatDomainModule {
             getFriendUseCase = GetFriendUseCase(chatRepository),
             sendMessageUseCase = SendMessageUseCase(chatRepository),
             readAllMessagesUseCase = ReadAllMessagesUseCase(chatRepository),
-            getRecentMessagesUseCase = GetRecentMessagesUseCase(chatRepository, coreRepository = coreRepository)
+            getRecentMessagesUseCase = GetRecentMessagesUseCase(chatRepository, coreRepository = coreRepository),
+            leaveRoomUseCase = LeaveRoomUseCase(chatRepository),
+            connectToServer = ConnectToServer(chatRepository, coreRepository)
         )
     }
 

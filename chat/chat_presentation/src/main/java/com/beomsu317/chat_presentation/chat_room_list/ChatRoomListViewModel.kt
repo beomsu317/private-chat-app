@@ -1,6 +1,5 @@
 package com.beomsu317.chat_presentation.chat_room_list
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.core.common.Resource
-import com.beomsu317.core.domain.model.Room
 import com.beomsu317.core_ui.common.OneTimeEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -31,12 +29,38 @@ class ChatRoomListViewModel @Inject constructor(
         getRecentMessageList()
     }
 
-    private fun getRecentMessageList() {
+    fun onEvent(event: ChatRoomListEvent) {
+        when (event) {
+            is ChatRoomListEvent.LeaveRoom -> {
+                leaveRoom(event.roomId)
+            }
+        }
+    }
 
+    private fun getRecentMessageList() {
         chatUseCases.getRecentMessagesUseCase()
             .onEach {
                 state = state.copy(recentMessage = it)
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun leaveRoom(roomId: String) {
+        viewModelScope.launch {
+            chatUseCases.leaveRoomUseCase(roomId).onEach { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        state = state.copy(isLoading = false)
+                    }
+                    is Resource.Error -> {
+                        state = state.copy(isLoading = false)
+                        _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(resource.message ?: "An unexpected error occured"))
+                    }
+                    is Resource.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
     }
 }

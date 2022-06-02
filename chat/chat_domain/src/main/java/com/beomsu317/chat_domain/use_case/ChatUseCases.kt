@@ -7,5 +7,7 @@ data class ChatUseCases(
     val getFriendUseCase: GetFriendUseCase,
     val sendMessageUseCase: SendMessageUseCase,
     val readAllMessagesUseCase: ReadAllMessagesUseCase,
-    val getRecentMessagesUseCase: GetRecentMessagesUseCase
+    val getRecentMessagesUseCase: GetRecentMessagesUseCase,
+    val leaveRoomUseCase: LeaveRoomUseCase,
+    val connectToServer: ConnectToServer
 )

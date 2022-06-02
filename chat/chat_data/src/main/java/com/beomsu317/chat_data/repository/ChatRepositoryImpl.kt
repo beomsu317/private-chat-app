@@ -1,6 +1,5 @@
 package com.beomsu317.chat_data.repository
 
-import android.util.Log
 import com.beomsu317.chat_data.local.ChatDatabase
 import com.beomsu317.chat_data.mapper.*
 import com.beomsu317.chat_data.remote.PrivateChatApi
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.*
 
@@ -104,24 +102,24 @@ class ChatRepositoryImpl(
     }
 
     override fun closeChatServer() {
-        chatServerWebSocket?.close(1000, "Normal close")
-        chatServerWebSocket = null
+//        chatServerWebSocket?.close(1000, "Normal close")
+//        chatServerWebSocket = null
     }
 
     override suspend fun sendMessage(message: Message) {
-        withContext(dispatcher) {
-            chatServerWebSocket?.let {
-                val messageDto = message.toDto()
-                val encodedMessage = Json.encodeToString(messageDto)
-                it.send(encodedMessage)
-            }
-        }
+//        withContext(dispatcher) {
+//            chatServerWebSocket?.let {
+//                val messageDto = message.toDto()
+//                val encodedMessage = Json.encodeToString(messageDto)
+//                it.send(encodedMessage)
+//            }
+//        }
     }
 
     override suspend fun insertMessage(message: Message) {
-        withContext(dispatcher) {
-            database.chatDao().insertMessage(messageEntity = message.toEntity())
-        }
+//        withContext(dispatcher) {
+//            database.chatDao().insertMessage(messageEntity = message.toEntity())
+//        }
     }
 
     override fun getLastMessagesFlow(): Flow<List<Message>> {
@@ -133,7 +131,7 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun updateMessagesReadToTrue(roomId: String) {
-        database.chatDao().updateMessagesReadToTrue(roomId)
+//        database.chatDao().updateMessagesReadToTrue(roomId)
     }
 
     override suspend fun getRoomInfo(roomId: String): Room {
@@ -148,5 +146,22 @@ class ChatRepositoryImpl(
             database.chatDao().insertRoom(room.toEntity())
             database.chatDao().getRoomInfo(roomId).toRoom()
         }
+    }
+
+    override suspend fun leaveRoom(roomId: String) {
+//        val token = appDataStore.tokenFlow.first()
+//        val response = api.leaveRoom(auth = "Bearer ${token}", request = LeaveRoomRequest(roomId))
+//        if (!response.isSuccessful) {
+//            throw Exception(response.message())
+//        }
+//        database.chatDao().deleteRoom(roomId)
+//        database.chatDao().deleteRoomMessages(roomId)
+//
+//        val user = appDataStore.userFlow.first()
+//        appDataStore.updateUser(
+//            user = user.copy(
+//                rooms = user.rooms - roomId
+//            )
+//        )
     }
 }

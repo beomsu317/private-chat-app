@@ -1,5 +1,6 @@
 package com.beomsu317.friends_presentation.add_friends
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,11 +11,13 @@ import com.beomsu317.core.domain.model.UserFriend
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,6 +44,12 @@ class AddFriendsViewModel @Inject constructor(
         }
     }
 
+    private val handler = CoroutineExceptionHandler { _, e ->
+        viewModelScope.launch {
+            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
+        }
+    }
+
     private fun addFriend(friendId: String) {
         viewModelScope.launch {
             friendsUseCases.addFriendUseCase(userFriend = UserFriend(friendId, 2))
@@ -51,6 +60,9 @@ class AddFriendsViewModel @Inject constructor(
                                 it.id != friendId
                             }
                             state = state.copy(friends = friends.toSet(), isLoading = false)
+                            _oneTimeEvent.send(
+                                OneTimeEvent.ShowSnackbar("Successfully added")
+                            )
                         }
                         is Resource.Error -> {
                             _oneTimeEvent.send(
@@ -69,10 +81,8 @@ class AddFriendsViewModel @Inject constructor(
     }
 
     private fun searchFriends() {
-        viewModelScope.launch {
-            friendsUseCases.searchFriendsUseCase(searchText = searchText).onEach {
-                state = state.copy(friends = it)
-            }.launchIn(viewModelScope)
+        viewModelScope.launch(handler) {
+            state = state.copy(friends = friendsUseCases.searchFriendsUseCase(searchText = searchText))
         }
     }
 }

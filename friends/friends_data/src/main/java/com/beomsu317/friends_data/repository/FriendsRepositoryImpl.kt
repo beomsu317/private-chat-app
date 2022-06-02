@@ -14,10 +14,7 @@ import com.beomsu317.friends_data.mapper.toFriend
 import com.beomsu317.friends_data.mapper.toFriendEntity
 import com.beomsu317.friends_data.remote.request.GetSearchFriendsRequest
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
@@ -48,12 +45,9 @@ class FriendsRepositoryImpl(
         }
     }
 
-    override suspend fun searchFriends(searchText: String): Flow<Set<Friend>> = flow {
+    override suspend fun searchFriends(searchText: String): Set<Friend> {
         val user = appDataStore.userFlow.first()
-        emit(database.friendsDao().searchFriends(searchText).map { it.toFriend() }.filter {
-            val friendsId = user.friends.map { it.id }
-            !friendsId.contains(it.id)
-        }.toSet())
+
         val token = appDataStore.tokenFlow.first()
         val response = api.getAllFriends(
             auth = "Bearer ${token}",
@@ -66,10 +60,10 @@ class FriendsRepositoryImpl(
             response.body()?.result?.friends ?: throw Exception("Get all friend error occured")
         val friendEntities = friends.map { it.toFriendEntity() }
         database.friendsDao().insertFriends(friendEntities)
-        emit(database.friendsDao().searchFriends(searchText).map { it.toFriend() }.filter {
+        return database.friendsDao().searchFriends(searchText).map { it.toFriend() }.filter {
             val friendsId = user.friends.map { it.id }
             !friendsId.contains(it.id)
-        }.toSet())
+        }.toSet()
     }
 
     override suspend fun addFriend(userFriend: UserFriend) {

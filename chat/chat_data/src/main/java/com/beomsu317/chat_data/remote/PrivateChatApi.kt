@@ -1,6 +1,7 @@
 package com.beomsu317.chat_data.remote
 
 import com.beomsu317.chat_data.remote.request.CreateRoomRequest
+import com.beomsu317.chat_data.remote.request.LeaveRoomRequest
 import com.beomsu317.chat_data.remote.result.CreateRoomResult
 import com.beomsu317.chat_data.remote.result.GetFriendResult
 import com.beomsu317.chat_data.remote.result.GetRoomInfoResult
@@ -18,5 +19,8 @@ interface PrivateChatApi {
 
     @GET("/user/friends/{friendId}")
     suspend fun getFriend(@Header("Authorization") auth: String, @Path("friendId") friendId: String): Response<PrivateChatResponse<GetFriendResult>>
+
+    @POST("/chat/room/leave")
+    suspend fun leaveRoom(@Header("Authorization") auth: String, @Body request: LeaveRoomRequest): Response<PrivateChatResponse<Unit>>
 
 }

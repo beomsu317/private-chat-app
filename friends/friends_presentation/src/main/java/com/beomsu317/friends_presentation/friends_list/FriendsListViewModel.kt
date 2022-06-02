@@ -10,12 +10,10 @@ import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.friends_domain.model.FriendWithPriority
 import com.beomsu317.friends_domain.use_case.FriendsUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +29,14 @@ class FriendsListViewModel @Inject constructor(
 
     var searchText by mutableStateOf("")
 
-    var getFriendsJob: Job? = null
+    private var getFriendsJob: Job? = null
+
+    private val handler = CoroutineExceptionHandler { _, e ->
+        viewModelScope.launch {
+            _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
+            state = state.copy(isLoading = false)
+        }
+    }
 
     init {
         getFriends(true)
@@ -55,10 +60,10 @@ class FriendsListViewModel @Inject constructor(
     }
 
     private fun getFriends(refresh: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(handler) {
             state = state.copy(isLoading = true)
             getFriendsJob?.cancel()
-            getFriendsJob = friendsUseCases.getMyFriendsUseCase(refresh).onEach {
+            getFriendsJob = friendsUseCases.getUserFriendsUseCase(refresh).onEach {
                 val user = friendsUseCases.getUserFlowUseCase().first()
                 val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, it)
                 if (searchText.isNullOrEmpty()) {
