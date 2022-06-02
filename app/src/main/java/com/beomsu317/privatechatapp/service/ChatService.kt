@@ -88,7 +88,7 @@ class ChatService : Service() {
                                     .setSmallIcon(com.beomsu317.core.R.drawable.logo)
                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                     .setAutoCancel(true)
-//                                    .setContentIntent(pendingIntent)
+                                    .setContentIntent(pendingIntent)
                             startForeground(NOTIFICATION_ID, notification.build())
                             stopForeground(false)
                         }
