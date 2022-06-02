@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import com.beomsu317.chat_domain.repository.ChatRepository
 import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.core.domain.repository.CoreRepository
+import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.privatechatapp.activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -30,11 +31,12 @@ class ChatService : Service() {
         const val CHANNEL_NAME = "Chat Notification"
     }
 
-    @Inject
-    lateinit var coreRepository: CoreRepository
 
     @Inject
     lateinit var chatRepository: ChatRepository
+
+    @Inject
+    lateinit var coreUseCases: CoreUseCases
 
     @Inject
     lateinit var chatUseCases: ChatUseCases
@@ -65,7 +67,7 @@ class ChatService : Service() {
 
         scope.launch {
             chatUseCases.connectToServer(
-                scope = this,
+                scope = scope,
                 onNotificate = { displayName, message ->
                     scope.launch {
                         val intent = Intent(this@ChatService, MainActivity::class.java).apply {
@@ -73,11 +75,11 @@ class ChatService : Service() {
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         }
                         val pendingIntent: PendingIntent = PendingIntent.getActivity(this@ChatService, 0, intent,
-                            FLAG_IMMUTABLE
+                            PendingIntent.FLAG_IMMUTABLE
                         )
 
-                        val settings = coreRepository.getSettingsFlow().first()
-                        val user = coreRepository.getUserFlow().first()
+                        val settings = coreUseCases.getSettingsFlowUseCase().first()
+                        val user = coreUseCases.getUserFlowUseCase().first()
                         if (settings.notifications && user.id != message.senderId) {
                             val notification =
                                 NotificationCompat.Builder(this@ChatService, CHANNEL_ID)
@@ -86,7 +88,7 @@ class ChatService : Service() {
                                     .setSmallIcon(com.beomsu317.core.R.drawable.logo)
                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                     .setAutoCancel(true)
-                                    .setContentIntent(pendingIntent)
+//                                    .setContentIntent(pendingIntent)
                             startForeground(NOTIFICATION_ID, notification.build())
                             stopForeground(false)
                         }
