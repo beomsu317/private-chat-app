@@ -23,8 +23,7 @@ object FriendsDomainModule {
             getUserFriendsUseCase = GetUserFriendsUseCase(friendsRepository),
             sortByPriorityUseCase = SortByPriorityUseCase(),
             updateUserUseCase = UpdateUserUseCase(coreRepository),
-            getUserFlowUseCase = GetUserFlowUseCase(coreRepository),
-            searchUserFriendUseCase = SearchUserFriendUseCase(friendsRepository)
+            searchUserFriendUseCase = SearchUserFriendUseCase(friendsRepository),
         )
     }
 }

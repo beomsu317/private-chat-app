@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beomsu317.core.common.Resource
+import com.beomsu317.core.domain.repository.CoreRepository
+import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.core_ui.common.OneTimeEvent
 import com.beomsu317.friends_domain.model.FriendWithPriority
 import com.beomsu317.friends_domain.use_case.FriendsUseCases
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FriendsListViewModel @Inject constructor(
     private val friendsUseCases: FriendsUseCases,
+    private val coreUseCases: CoreUseCases
 ) : ViewModel() {
 
     var state by mutableStateOf(FriendsListState())
@@ -64,7 +67,7 @@ class FriendsListViewModel @Inject constructor(
             state = state.copy(isLoading = true)
             getFriendsJob?.cancel()
             getFriendsJob = friendsUseCases.getUserFriendsUseCase(refresh).onEach {
-                val user = friendsUseCases.getUserFlowUseCase().first()
+                val user = coreUseCases.getUserFlowUseCase().first()
                 val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, it)
                 if (searchText.isNullOrEmpty()) {
                     state = state.copy(friends = sortedFriendsList, isLoading = false)
@@ -78,7 +81,7 @@ class FriendsListViewModel @Inject constructor(
     private fun search() {
         viewModelScope.launch {
             val friends = friendsUseCases.searchUserFriendUseCase(searchText).toSet()
-            val user = friendsUseCases.getUserFlowUseCase().first()
+            val user = coreUseCases.getUserFlowUseCase().first()
             val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, friends)
             state = state.copy(friends = sortedFriendsList, isLoading = false)
         }
