@@ -1,6 +1,6 @@
 # Private Chat App
 
-Private Chat App is an Application based on Modern Android tech-stacks focus on Jetpack Compose UI and Ktor. Chat with friends without server database. However, if you want to receive messages, you need to keep the application installed. Since no messages are stored on the server, it is completely confidential.
+Private Chat App is an Application based on Modern Android tech-stacks focus on Jetpack Compose UI. Chat with friends without server database. However, if you want to receive messages, you need to keep the application installed. Since no messages are stored on the server, it is completely confidential.
 
 ## Features
 
