@@ -4,33 +4,33 @@ Private Chat App is an Application based on Modern Android tech-stacks focus on 
 
 ## Features
 
-### Sign up & Sign in
+[comment]: <> (### Sign up & Sign in)
 
-Basic sign up and sign in process.
+[comment]: <> (Basic sign up and sign in process.)
 
 <img src="media/sign_up_and_sign_in.gif" width="30%">
 
-### Session
+[comment]: <> (### Session)
 
-Keep session even when app is closed.
+[comment]: <> (Keep session even when app is closed.)
 
 <img src="media/session.gif" width="30%">
 
-### Add Friend
+[comment]: <> (### Add Friend)
 
-You can find, add, and prioritize friends.
+[comment]: <> (You can find, add, and prioritize friends.)
 
 <img src="media/add_friend.gif" width="30%">
 
-### Chat
+[comment]: <> (### Chat)
 
-You can chat with the added friend. However, if the app is not installed(Service is not running), you can't receive messages.
+[comment]: <> (You can chat with the added friend. However, if the app is not installed&#40;Service is not running&#41;, you can't receive messages.)
 
 <img src="media/chat.gif" width="30%">
 
-### Profile
+[comment]: <> (### Profile)
 
-You can set up your profile image and settings.
+[comment]: <> (You can set up your profile image and settings.)
 
 <img src="media/profile.gif" width="30%">
 
@@ -50,7 +50,7 @@ You can set up your profile image and settings.
     - [System UI Controller](https://google.github.io/accompanist/systemuicontroller/) - To control system UI in composable.
     - [Swipe Refresh](https://google.github.io/accompanist/swiperefresh/)
     - [Permissions](https://google.github.io/accompanist/permissions/)
-- [Data Store](https://developer.android.com/topic/libraries/architecture/datastore)
+- [Data Store](https://developer.android.com/topic/libraries/architecture/datastore) - To save user token.
 - [Android Architecture Components](https://developer.android.com/topic/architecture)
     - MVVM Architecture (Declarative UI - ViewModel - Use Case - Model)
     - Repository pattern
