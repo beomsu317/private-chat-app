@@ -1,6 +1,6 @@
 # Private Chat App
 
-Private Chat App is an Application based on Modern Android tech-stacks focus on Jetpack Compose UI. Chat with friends without storing messages on the server. However, if you want to receive messages, you need to keep the application installed. Since no messages are stored on the server, it is completely confidential.
+Private Chat App is an Application based on Modern Android tech-stacks focus on Jetpack Compose UI. Chat with friends without storing messages on the server. However, if you want to receive messages, you need to keep the application installed. Since no messages are stored on the server, it is completely confidential. Design inspired by [Nuntium: Sign In & Sign Up Screens](https://dribbble.com/shots/14568997/attachments/6258851?mode=media).  
 
 ## Features
 
