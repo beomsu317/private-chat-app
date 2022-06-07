@@ -4,7 +4,10 @@ Private Chat App is an Application based on Modern Android tech-stacks focus on 
 
 ## Features
 
-[comment]: <> (Basic sign up and sign in process and you can keep session even when app is closed. )
+* Basic sign up and sign in process and you can keep session even when app is closed.
+* You can find, add, and prioritize friends.
+* You can chat with the added friend. However, if the app is not installed&#40;Service is not running&#41;, you can't receive messages.
+* You can set up your profile image and settings.
 
 <div align="center">
 <img src="media/sign_up_and_sign_in.gif" width="30%">
@@ -13,17 +16,6 @@ Private Chat App is an Application based on Modern Android tech-stacks focus on 
 <img src="media/chat.gif"  width="30%">
 <img src="media/profile.gif" width="30%">
 </div>
-
-
-[comment]: <> (You can find, add, and prioritize friends.)
-
-
-[comment]: <> (You can chat with the added friend. However, if the app is not installed&#40;Service is not running&#41;, you can't receive messages.)
-
-
-[comment]: <> (You can set up your profile image and settings.)
-
-
 
 ## Tech stacks & Libraries
 
