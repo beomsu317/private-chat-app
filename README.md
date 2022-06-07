@@ -6,7 +6,7 @@ Private Chat App is an Application based on Modern Android tech-stacks focus on 
 
 [comment]: <> (Basic sign up and sign in process and you can keep session even when app is closed. )
 
-<div>
+<div align="center">
 <img src="media/sign_up_and_sign_in.gif" width="30%">
 <img src="media/session.gif"  width="30%">
 <img src="media/add_friend.gif" width="30%">
