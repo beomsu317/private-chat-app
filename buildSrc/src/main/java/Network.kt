@@ -1,9 +1,9 @@
 object Network {
 
-    const val retrofitVersion = "2.9.0"
+    const private val retrofitVersion = "2.9.0"
     const val retrofit = "com.squareup.retrofit2:retrofit:${retrofitVersion}"
 
-    const val okhttpVersion = "4.9.3"
+    const private val okhttpVersion = "4.9.3"
     const val okhttp = "com.squareup.okhttp3:okhttp:${okhttpVersion}"
 
 }
