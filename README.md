@@ -2,6 +2,28 @@
 
 Private Chat App is an Application based on Modern Android tech-stacks focus on Jetpack Compose UI and Ktor. Chat with friends without server database. However, if you want to receive messages, you need to keep the application installed. 
 
+## Features
+
+### Sign up & Sign in
+
+<img src="media/sign_up_and_sign_in.gif" width="30%">
+
+### Session
+
+<img src="media/session.gif" width="30%">
+
+### Add Friend
+
+<img src="media/add_friend.gif" width="30%">
+
+### Chat
+
+<img src="media/chat.gif" width="30%">
+
+### Profile
+
+<img src="media/profile.gif" width="30%">
+
 ## Tech stacks & Libraries
 
 - [Kotlin](https://developer.android.com/kotlin) based, [Kotlin Flow](https://developer.android.com/kotlin/flow) + [Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines) for asynchronous.
@@ -16,9 +38,13 @@ Private Chat App is an Application based on Modern Android tech-stacks focus on 
 - [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization) - Kotlin serialize, deserialize library.
 - [Accompanist](https://google.github.io/accompanist/insets/)
     - [System UI Controller](https://google.github.io/accompanist/systemuicontroller/) - To control system UI in composable.
+    - [Swipe Refresh](https://google.github.io/accompanist/swiperefresh/)
+    - [Permissions](https://google.github.io/accompanist/permissions/)
+- [Data Store](https://developer.android.com/topic/libraries/architecture/datastore)
 - [Android Architecture Components](https://developer.android.com/topic/architecture)
     - MVVM Architecture (Declarative UI - ViewModel - Use Case - Model)
     - Repository pattern
+- [swipe](https://github.com/saket/swipe)
 - Feature-Based Multi Module Architecture
 
 ## MAD Score
