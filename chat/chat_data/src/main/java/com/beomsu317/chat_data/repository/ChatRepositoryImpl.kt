@@ -51,7 +51,6 @@ class ChatRepositoryImpl(
     override suspend fun getFriend(friendId: String): Friend {
         return withContext(dispatcher) {
             val token = appDataStore.tokenFlow.first()
-            Log.d("TAG", "getFriend: ${token}")
             val response = api.getFriend(auth = "Bearer ${token}", friendId = friendId)
             if (!response.isSuccessful) {
                 throw Exception(response.message())
