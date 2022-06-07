@@ -10,6 +10,8 @@ Basic sign up and sign in process and you can keep session even when app is clos
 
 <img src="media/session.gif" align="right" width="30%">
 
+<br>
+
 You can find, add, and prioritize friends.
 
 <img src="media/add_friend.gif" align="right" width="30%">
