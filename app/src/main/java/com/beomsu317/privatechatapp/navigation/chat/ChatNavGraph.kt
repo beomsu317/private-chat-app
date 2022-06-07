@@ -3,10 +3,12 @@ package com.beomsu317.chat_presentation
 import androidx.compose.material.SnackbarDuration
 import androidx.navigation.*
 import androidx.navigation.compose.composable
+import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.chat_presentation.chat_room.ChatRoomScreen
 import com.beomsu317.chat_presentation.chat_room_list.ChatRoomListScreen
 import com.beomsu317.privatechatapp.navigation.bottom_navigation.CHAT_GRAPH_ROUTE
 import com.beomsu317.privatechatapp.navigation.chat.ChatScreen
+import com.beomsu317.privatechatapp.navigation.friends.FriendsScreen
 
 
 fun NavGraphBuilder.chatNavGraph(
@@ -39,6 +41,9 @@ fun NavGraphBuilder.chatNavGraph(
             ChatRoomScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateAddFriend = {
+                    navController.navigate(FriendsScreen.AddFriendScreen.route)
                 },
                 showSnackbar = showSnackbar
             )

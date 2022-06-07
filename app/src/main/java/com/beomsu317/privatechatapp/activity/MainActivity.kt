@@ -19,6 +19,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.core.common.startService
 import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.privatechatapp.navigation.bottom_navigation.bottomNavBarRoutes
@@ -38,6 +39,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var coreUseCases: CoreUseCases
+
+    @Inject
+    lateinit var chatUseCases: ChatUseCases
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -75,7 +79,9 @@ class MainActivity : ComponentActivity() {
                                         duration = duration
                                     )
                                 }
-                            })
+                            },
+                            chatUseCases = chatUseCases
+                        )
                     }
                 }
             }

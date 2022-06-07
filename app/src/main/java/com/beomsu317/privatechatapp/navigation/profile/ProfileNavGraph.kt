@@ -2,11 +2,13 @@ package com.beomsu317.profile_presentation
 
 import android.content.Intent
 import androidx.compose.material.SnackbarDuration
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.core_ui.navigation.*
 import com.beomsu317.privatechatapp.navigation.bottom_navigation.CHAT_GRAPH_ROUTE
 import com.beomsu317.privatechatapp.navigation.bottom_navigation.FRIENDS_GRAPH_ROUTE
@@ -18,10 +20,13 @@ import com.beomsu317.privatechatapp.navigation.startup.StartupScreen
 import com.beomsu317.privatechatapp.service.ChatService
 import com.beomsu317.profile_presentation.my_profile.MyProfileScreen
 import com.beomsu317.profile_presentation.settings.SettingsScreen
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 fun NavGraphBuilder.profileNavGraph(
     navController: NavHostController,
-    showSnackbar: (String, SnackbarDuration) -> Unit
+    showSnackbar: (String, SnackbarDuration) -> Unit,
+    chatUseCases: ChatUseCases
 ) {
     navigation(
         startDestination = ProfileScreen.MyProfileScreen.route,
@@ -29,9 +34,13 @@ fun NavGraphBuilder.profileNavGraph(
     ) {
         composable(ProfileScreen.MyProfileScreen.route) {
             val context = LocalContext.current
+            val scope = rememberCoroutineScope()
             MyProfileScreen(
                 showSnackbar = showSnackbar,
                 onSignOut = {
+                    scope.launch {
+                        chatUseCases.removeMessagesUseCase()
+                    }
                     context.stopService(Intent(context, ChatService::class.java))
                     navController.findDestination(FRIENDS_GRAPH_ROUTE)?.let {
                         navController.popBackStack(it.id, true)

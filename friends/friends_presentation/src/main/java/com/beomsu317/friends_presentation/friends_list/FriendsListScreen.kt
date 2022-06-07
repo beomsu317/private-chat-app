@@ -53,7 +53,6 @@ fun FriendsListScreen(
 ) {
     val state = viewModel.state
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
-    val scope = rememberCoroutineScope()
 
     var fabHeight by remember { mutableStateOf(0.dp) }
     val fabHeightState by animateDpAsState(

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
-class ConnectToServer @Inject constructor(
+class ConnectToServerUseCase @Inject constructor(
     private val chatRepository: ChatRepository,
     private val coreRepository: CoreRepository
 ) {

@@ -1,5 +1,6 @@
 package com.beomsu317.chat_data.repository
 
+import android.util.Log
 import com.beomsu317.chat_data.local.ChatDatabase
 import com.beomsu317.chat_data.mapper.*
 import com.beomsu317.chat_data.remote.PrivateChatApi
@@ -49,18 +50,16 @@ class ChatRepositoryImpl(
 
     override suspend fun getFriend(friendId: String): Friend {
         return withContext(dispatcher) {
-            val friendEntity = database.chatDao().getFriend(friendId) ?: run {
-                val token = appDataStore.tokenFlow.first()
-                val response = api.getFriend(auth = "Bearer ${token}", friendId = friendId)
-                if (!response.isSuccessful) {
-                    throw Exception(response.message())
-                }
-                val friendDto =
-                    response.body()?.result?.friend ?: throw Exception("Response result is null")
-                database.chatDao().insertFriend(friendDto.toEntity())
-                database.chatDao().getFriend(friendId)
+            val token = appDataStore.tokenFlow.first()
+            Log.d("TAG", "getFriend: ${token}")
+            val response = api.getFriend(auth = "Bearer ${token}", friendId = friendId)
+            if (!response.isSuccessful) {
+                throw Exception(response.message())
             }
-            friendEntity.toFriend()
+            val friendDto =
+                response.body()?.result?.friend ?: throw Exception("Response result is null")
+            database.chatDao().insertFriend(friendDto.toEntity())
+            database.chatDao().getFriend(friendId).toFriend()
         }
     }
 
@@ -165,5 +164,9 @@ class ChatRepositoryImpl(
                 rooms = user.rooms - roomId
             )
         )
+    }
+
+    override suspend fun removeMessages() {
+        database.chatDao().removeMessages()
     }
 }

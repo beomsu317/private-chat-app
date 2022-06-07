@@ -65,7 +65,6 @@ fun MyProfileScreen(
 ) {
     val state = viewModel.state
     val oneTimeEventFlow = viewModel.oneTimeEventFlow
-    val context = LocalContext.current
 
     var edit by remember { mutableStateOf(false) }
     var uri by remember { mutableStateOf<Uri?>(null) }
@@ -359,12 +358,13 @@ fun FriendsAndRoomsSection(
     onClickRooms: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 70.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         CountItem(text = "Friends", count = user.friends.size, onClick = onClickFriends)
-        Spacer(modifier = Modifier.width(50.dp))
         CountItem(text = "Rooms", count = user.rooms.size, onClick = onClickRooms)
     }
 }
@@ -378,6 +378,7 @@ fun CountItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
+            .width(IntrinsicSize.Max)
             .clip(RoundedCornerShape(8.dp))
             .debounceClickable {
                 onClick()

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.beomsu317.chat_domain.use_case.ChatUseCases
 import com.beomsu317.chat_presentation.chatNavGraph
 import com.beomsu317.core_ui.navigation.startupNavGraph
 import com.beomsu317.friends_presentation.friendsNavGraph
@@ -18,7 +19,8 @@ import com.beomsu317.profile_presentation.profileNavGraph
 fun SetupNavGraph(
     navHostController: NavHostController,
     innerPadding: PaddingValues,
-    showSnackbar: (String, SnackbarDuration) -> Unit
+    showSnackbar: (String, SnackbarDuration) -> Unit,
+    chatUseCases: ChatUseCases
 ) {
     NavHost(
         navController = navHostController,
@@ -29,6 +31,6 @@ fun SetupNavGraph(
         startupNavGraph(navHostController, showSnackbar)
         friendsNavGraph(navHostController, showSnackbar)
         chatNavGraph(navHostController, showSnackbar)
-        profileNavGraph(navHostController, showSnackbar)
+        profileNavGraph(navHostController, showSnackbar, chatUseCases)
     }
 }

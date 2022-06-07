@@ -36,9 +36,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.beomsu317.core.R
+import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core.domain.model.Message
 import com.beomsu317.core.domain.model.User
 import com.beomsu317.core_ui.common.OneTimeEvent
+import com.beomsu317.core_ui.components.DebounceButton
 import com.beomsu317.core_ui.components.PrivateChatTopAppBar
 import com.beomsu317.core_ui.components.button.DebounceIconButton
 import com.beomsu317.core_ui.components.text_field.ChatTextField
@@ -48,6 +50,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun ChatRoomScreen(
     onNavigateBack: () -> Unit,
+    onNavigateAddFriend: () -> Unit,
     showSnackbar: (String, SnackbarDuration) -> Unit,
     viewModel: ChatRoomViewModel = hiltViewModel()
 ) {
@@ -92,27 +95,38 @@ fun ChatRoomScreen(
                 }
             },
             actions = {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(
-                            if (state.friend.photoUrl.isEmpty()) {
-                                R.drawable.user_placeholder
-                            } else {
-                                state.friend.photoUrl
-                            }
-                        )
-                        .build(),
-                    contentDescription = "friend_profile",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(end = 14.dp)
-                        .size(32.dp)
-                        .clip(CircleShape)
-                )
+                val friendIdList = state.user.friends.map { it.id }
+                if (friendIdList.contains(state.friend.id)) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(
+                                if (state.friend.photoUrl.isEmpty()) {
+                                    R.drawable.user_placeholder
+                                } else {
+                                    state.friend.photoUrl
+                                }
+                            )
+                            .build(),
+                        contentDescription = "friend_profile",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(end = 14.dp)
+                            .size(32.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    DebounceButton(onClick = {
+                        onNavigateAddFriend()
+                    }) {
+                        Text(text = "Add")
+                    }
+                }
             }
         )
         Box(
-            modifier = Modifier.fillMaxSize().imePadding()
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
         ) {
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize(),
@@ -122,6 +136,7 @@ fun ChatRoomScreen(
                     messages = state.messages,
                     user = state.user,
                     lazyListState = lazyListState,
+                    friend = state.friend,
                     modifier = Modifier.constrainAs(messageSection) {
                         top.linkTo(parent.top)
                         bottom.linkTo(sendMessageSection.top)
@@ -130,7 +145,7 @@ fun ChatRoomScreen(
                 )
                 SendMessageSection(
                     onSendMessage = { text ->
-                        if (text.isNotBlank()) {
+                        if (text.isNotEmpty()) {
                             viewModel.onEvent(ChatRoomEvent.SendMessage(text = text))
                         }
                     },
@@ -152,6 +167,7 @@ fun ChatRoomScreen(
 fun MessagesSection(
     messages: List<Message>,
     user: User,
+    friend: Friend,
     lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -167,6 +183,7 @@ fun MessagesSection(
             } else {
                 FriendMessageItemSection(
                     message = message,
+                    friend = friend,
                 )
             }
         }
@@ -175,7 +192,8 @@ fun MessagesSection(
 
 @Composable
 fun FriendMessageItemSection(
-    message: Message
+    message: Message,
+    friend: Friend
 ) {
     Column(
         modifier = Modifier
@@ -188,7 +206,13 @@ fun FriendMessageItemSection(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(message.photoUrl)
+                    .data(
+                        if (friend.photoUrl.isNotEmpty()) {
+                            friend.photoUrl
+                        } else {
+                            R.drawable.user_placeholder
+                        }
+                    )
                     .crossfade(true)
                     .build(),
                 contentDescription = message.displayName,

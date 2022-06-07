@@ -39,4 +39,7 @@ interface ChatDao {
 
     @Query("DELETE FROM messageentity WHERE roomId = :roomId")
     suspend fun deleteRoomMessages(roomId: String)
+
+    @Query("DELETE FROM messageentity")
+    suspend fun removeMessages()
 }

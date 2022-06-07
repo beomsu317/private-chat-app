@@ -1,5 +1,6 @@
 package com.beomsu317.friends_domain.use_case
 
+import android.util.Log
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core.domain.model.UserFriend
 import com.beomsu317.friends_domain.model.FriendWithPriority
@@ -12,15 +13,15 @@ class SortByPriorityUseCase {
         if (friends.isNullOrEmpty()) {
             return emptyList()
         }
-        val sortedUserFriend = userFriends.sortedBy {
+        val reversedUserFriend = userFriends.sortedBy {
             it.priority
         }.reversed()
         var friendsList = friends.toList()
-        val sortedFriendsList = mutableListOf<FriendWithPriority>()
-        sortedUserFriend.forEach { userFriend ->
+        val sortedFriendList = mutableListOf<FriendWithPriority>()
+        reversedUserFriend.forEach { userFriend ->
             friendsList.forEachIndexed { index, friend ->
                 if (userFriend.id == friend.id) {
-                    sortedFriendsList += FriendWithPriority(
+                    sortedFriendList += FriendWithPriority(
                         id = friendsList[index].id,
                         email = friendsList[index].email,
                         photoUrl = friendsList[index].photoUrl,
@@ -34,6 +35,6 @@ class SortByPriorityUseCase {
                 }
             }
         }
-        return sortedFriendsList
+        return sortedFriendList
     }
 }

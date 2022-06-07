@@ -25,7 +25,8 @@ object ChatDomainModule {
             readAllMessagesUseCase = ReadAllMessagesUseCase(chatRepository),
             getRecentMessagesUseCase = GetRecentMessagesUseCase(chatRepository, coreRepository = coreRepository),
             leaveRoomUseCase = LeaveRoomUseCase(chatRepository),
-            connectToServer = ConnectToServer(chatRepository, coreRepository)
+            connectToServerUseCase = ConnectToServerUseCase(chatRepository, coreRepository),
+            removeMessagesUseCase = RemoveMessagesUseCase(chatRepository)
         )
     }
 

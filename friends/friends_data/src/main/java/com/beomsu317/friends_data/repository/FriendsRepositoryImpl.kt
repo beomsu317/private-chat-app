@@ -1,6 +1,5 @@
 package com.beomsu317.friends_data.repository
 
-import android.util.Log
 import com.beomsu317.core.domain.model.Friend
 import com.beomsu317.core.domain.model.UserFriend
 import com.beomsu317.friends_data.remote.PrivateChatApi
@@ -13,7 +12,7 @@ import com.beomsu317.core.domain.data_store.AppDataStore
 import com.beomsu317.friends_data.mapper.toUserFriendEntity
 import com.beomsu317.friends_data.mapper.toFriend
 import com.beomsu317.friends_data.mapper.toFriendEntity
-import com.beomsu317.friends_data.remote.request.GetSearchFriendsRequest
+import com.beomsu317.friends_data.remote.request.SearchFriendsRequest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -32,7 +31,7 @@ class FriendsRepositoryImpl(
         delay(300L)
         if (refresh) {
             val token = appDataStore.tokenFlow.first()
-            val response = api.getMyFriends(auth = "Bearer ${token}")
+            val response = api.getUserFriends(auth = "Bearer ${token}")
             if (!response.isSuccessful) {
                 throw Exception(response.message())
             }
@@ -54,9 +53,9 @@ class FriendsRepositoryImpl(
         }.toSet())
         delay(500L)
 
-        val response = api.getAllFriends(
+        val response = api.searchFriends(
             auth = "Bearer ${token}",
-            request = GetSearchFriendsRequest(searchText)
+            request = SearchFriendsRequest(searchText)
         )
         if (!response.isSuccessful) {
             throw Exception(response.message())

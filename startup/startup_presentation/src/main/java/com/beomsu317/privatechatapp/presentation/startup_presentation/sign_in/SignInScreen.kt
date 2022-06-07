@@ -112,8 +112,8 @@ fun AccountSection(
     onSignUpButtonClick: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    var email by remember { mutableStateOf("beomsu318@gmail.com") }
-    var password by remember { mutableStateOf("12345678") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(

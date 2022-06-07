@@ -3,18 +3,15 @@ package com.beomsu317.privatechatapp.service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.beomsu317.chat_domain.repository.ChatRepository
 import com.beomsu317.chat_domain.use_case.ChatUseCases
-import com.beomsu317.core.domain.repository.CoreRepository
 import com.beomsu317.core.domain.use_case.CoreUseCases
 import com.beomsu317.privatechatapp.activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +63,7 @@ class ChatService : Service() {
         }
 
         scope.launch {
-            chatUseCases.connectToServer(
+            chatUseCases.connectToServerUseCase(
                 scope = scope,
                 onNotificate = { displayName, message ->
                     scope.launch {

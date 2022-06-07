@@ -31,4 +31,6 @@ interface ChatRepository {
     suspend fun getRoomInfo(roomId: String): Room
 
     suspend fun leaveRoom(roomId: String)
+
+    suspend fun removeMessages()
 }

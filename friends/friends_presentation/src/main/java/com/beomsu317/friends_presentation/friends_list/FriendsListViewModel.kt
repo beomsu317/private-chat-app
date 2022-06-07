@@ -61,10 +61,9 @@ class FriendsListViewModel @Inject constructor(
             state = state.copy(isLoading = true)
             getFriendsJob?.cancel()
             getFriendsJob = friendsUseCases.getUserFriendsUseCase(refresh).onEach {
-                Log.d("TAG", "getFriends: ${it}")
                 val user = coreUseCases.getUserFlowUseCase().first()
                 val sortedFriendsList = friendsUseCases.sortByPriorityUseCase(user.friends, it)
-                if (searchText.isNullOrEmpty()) {
+                if (searchText.isEmpty()) {
                     state = state.copy(friends = sortedFriendsList, isLoading = false)
                 } else {
                     search()

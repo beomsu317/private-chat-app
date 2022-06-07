@@ -1,5 +1,6 @@
 package com.beomsu317.chat_presentation.chat_room
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -64,9 +65,11 @@ class ChatRoomViewModel @Inject constructor(
                         getMessagesJob?.cancel()
                         getMessagesJob =
                             chatUseCases.getMessagesFlowUseCase(room.id).onEach { messages ->
-                                state = state.copy(isLoading = false)
-                                readAllMessages(room.id)
-                                state = state.copy(messages = messages)
+                                val falseMessages = messages.filter { it.read == false }
+                                if (falseMessages.size > 0) {
+                                    readAllMessages(room.id)
+                                }
+                                state = state.copy(messages = messages, isLoading = false)
                             }.launchIn(viewModelScope)
                         state = state.copy(room = room)
                     }
@@ -107,8 +110,9 @@ class ChatRoomViewModel @Inject constructor(
 
     private fun getUser() {
         viewModelScope.launch {
-            val user = coreUseCases.getUserFlowUseCase().first()
-            state = state.copy(user = user)
+            coreUseCases.getUserFlowUseCase().onEach {
+                state = state.copy(user = it)
+            }.launchIn(viewModelScope)
         }
     }
 

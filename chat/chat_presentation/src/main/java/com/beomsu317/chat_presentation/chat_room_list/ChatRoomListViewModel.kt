@@ -42,6 +42,9 @@ class ChatRoomListViewModel @Inject constructor(
             .onEach {
                 state = state.copy(recentMessage = it)
             }
+            .catch { e ->
+                _oneTimeEvent.send(OneTimeEvent.ShowSnackbar(e.localizedMessage))
+            }
             .launchIn(viewModelScope)
     }
 
